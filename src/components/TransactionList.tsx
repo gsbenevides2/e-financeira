@@ -58,6 +58,12 @@ export const TransactionList: React.FC = () => {
         setCurrentMonthReference();
     }, [monthReferences]);
 
+    useEffect(() => {
+        if (selectedMonthReference) {
+            loadData();
+        }
+    }, [selectedMonthReference]);
+
     const loadData = async () => {
         try {
             setLoading(true);
