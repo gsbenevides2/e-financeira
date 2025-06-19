@@ -1,6 +1,6 @@
 import { Calendar, DollarSign, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import type { Account, TransactionCategory } from "../types";
+import type { Account, MonthReference, TransactionCategory } from "../types";
 import { Button } from "./ui/button";
 
 interface TransactionFormProps {
@@ -19,10 +19,14 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
         invoiceData: "",
         accountId: "",
         categoryId: "",
+        monthReferenceId: "",
     });
 
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<TransactionCategory[]>([]);
+    const [monthReferences, setMonthReferences] = useState<MonthReference[]>(
+        [],
+    );
     const [loading, setLoading] = useState(false);
     const [loadingData, setLoadingData] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -34,24 +38,35 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
     const loadSelectData = async () => {
         try {
             setLoadingData(true);
-            const [accountsResponse, categoriesResponse] = await Promise.all([
+            const [
+                accountsResponse,
+                categoriesResponse,
+                monthReferencesResponse,
+            ] = await Promise.all([
                 fetch("/api/accounts"),
                 fetch("/api/categories"),
+                fetch("/api/month-references"),
             ]);
 
-            if (!accountsResponse.ok || !categoriesResponse.ok) {
+            if (
+                !accountsResponse.ok || !categoriesResponse.ok ||
+                !monthReferencesResponse.ok
+            ) {
                 throw new Error("Erro ao carregar dados");
             }
 
-            const [accountsData, categoriesData] = await Promise.all([
-                accountsResponse.json(),
-                categoriesResponse.json(),
-            ]);
+            const [accountsData, categoriesData, monthReferencesData] =
+                await Promise.all([
+                    accountsResponse.json(),
+                    categoriesResponse.json(),
+                    monthReferencesResponse.json(),
+                ]);
 
             setAccounts(accountsData);
             setCategories(categoriesData);
+            setMonthReferences(monthReferencesData);
 
-            // Selecionar primeira conta e categoria por padrão se existirem
+            // Selecionar primeira conta, categoria e mês de referência por padrão se existirem
             if (accountsData.length > 0) {
                 setFormData((prev) => ({
                     ...prev,
@@ -62,6 +77,12 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
                 setFormData((prev) => ({
                     ...prev,
                     categoryId: categoriesData[0].id,
+                }));
+            }
+            if (monthReferencesData.length > 0) {
+                setFormData((prev) => ({
+                    ...prev,
+                    monthReferenceId: monthReferencesData[0].id,
                 }));
             }
         } catch (err) {
@@ -109,6 +130,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
             setError("Categoria é obrigatória");
             return;
         }
+        if (!formData.monthReferenceId) {
+            setError("Mês de referência é obrigatório");
+            return;
+        }
 
         const numericValue = parseFloat(formData.value);
         if (isNaN(numericValue)) {
@@ -134,6 +159,7 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
                     invoiceData: formData.invoiceData.trim() || undefined,
                     accountId: formData.accountId,
                     categoryId: formData.categoryId,
+                    monthReferenceId: formData.monthReferenceId,
                 }),
             });
 
@@ -326,6 +352,38 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
                                         value={category.id}
                                     >
                                         {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Mês de Referência */}
+                        <div>
+                            <label
+                                htmlFor="monthReferenceId"
+                                className="block text-sm font-medium text-gray-300 mb-1"
+                            >
+                                Mês de Referência *
+                            </label>
+                            <select
+                                id="monthReferenceId"
+                                name="monthReferenceId"
+                                value={formData.monthReferenceId}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                                disabled={loading}
+                                required
+                            >
+                                <option value="">
+                                    Selecione um mês de referência
+                                </option>
+                                {monthReferences.map((ref) => (
+                                    <option key={ref.id} value={ref.id}>
+                                        {new Date(ref.year, ref.month - 1)
+                                            .toLocaleString("pt-BR", {
+                                                month: "long",
+                                                year: "numeric",
+                                            })}
                                     </option>
                                 ))}
                             </select>

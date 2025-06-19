@@ -1,6 +1,11 @@
 import { Edit, Filter, Link, Search, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import type { Account, Transaction, TransactionCategory } from "../types";
+import type {
+    Account,
+    MonthReference,
+    Transaction,
+    TransactionCategory,
+} from "../types";
 import {
     formatCurrency,
     formatDateTime,
@@ -14,19 +19,17 @@ export const TransactionList: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<TransactionCategory[]>([]);
+    const [monthReferences, setMonthReferences] = useState<MonthReference[]>(
+        [],
+    );
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedAccount, setSelectedAccount] = useState<string>("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
-    const [selectedMonth, setSelectedMonth] = useState(() => {
-        const current = getCurrentMonth();
-        return current.month;
-    });
-    const [selectedYear, setSelectedYear] = useState(() => {
-        const current = getCurrentMonth();
-        return current.year;
-    });
+    const [selectedMonthReference, setSelectedMonthReference] = useState<
+        string
+    >("");
     const [editingTransaction, setEditingTransaction] = useState<
         Transaction | null
     >(null);
@@ -36,55 +39,76 @@ export const TransactionList: React.FC = () => {
 
     useEffect(() => {
         loadData();
-    }, [selectedMonth, selectedYear]);
+    }, []);
+
+    useEffect(() => {
+        const setCurrentMonthReference = async () => {
+            if (monthReferences.length > 0 && !selectedMonthReference) {
+                const current = getCurrentMonth();
+                const currentRef = monthReferences.find(
+                    (ref) =>
+                        ref.month === current.month &&
+                        ref.year === current.year,
+                );
+                if (currentRef) {
+                    setSelectedMonthReference(currentRef.id);
+                }
+            }
+        };
+        setCurrentMonthReference();
+    }, [monthReferences]);
 
     const loadData = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            // Criar filtros de data baseados no mês/ano selecionado
-            const startDate = `${selectedYear}-${
-                selectedMonth.toString().padStart(2, "0")
-            }-01`;
-            const lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
-            const endDate = `${selectedYear}-${
-                selectedMonth.toString().padStart(2, "0")
-            }-${lastDay}`;
-
-            const params = new URLSearchParams({
-                startDate,
-                endDate,
-            });
+            const params = new URLSearchParams();
 
             if (searchQuery) params.append("searchText", searchQuery);
             if (selectedAccount) params.append("accountId", selectedAccount);
             if (selectedCategory) params.append("categoryId", selectedCategory);
+            if (selectedMonthReference) {
+                params.append("monthReferenceId", selectedMonthReference);
+            }
 
-            const [transactionsResponse, accountsResponse, categoriesResponse] =
-                await Promise.all([
-                    fetch(`/api/transactions?${params.toString()}`),
-                    fetch("/api/accounts"),
-                    fetch("/api/categories"),
-                ]);
+            const [
+                transactionsResponse,
+                accountsResponse,
+                categoriesResponse,
+                monthReferencesResponse,
+            ] = await Promise.all([
+                fetch(`/api/transactions?${params.toString()}`),
+                fetch("/api/accounts"),
+                fetch("/api/categories"),
+                fetch("/api/month-references"),
+            ]);
 
             if (
-                !transactionsResponse.ok || !accountsResponse.ok ||
-                !categoriesResponse.ok
+                !transactionsResponse.ok ||
+                !accountsResponse.ok ||
+                !categoriesResponse.ok ||
+                !monthReferencesResponse.ok
             ) {
                 throw new Error("Erro ao carregar dados");
             }
 
-            const [transactionsData, accountsData, categoriesData] =
-                await Promise.all([
-                    transactionsResponse.json(),
-                    accountsResponse.json(),
-                    categoriesResponse.json(),
-                ]);
+            const [
+                transactionsData,
+                accountsData,
+                categoriesData,
+                monthReferencesData,
+            ] = await Promise.all([
+                transactionsResponse.json(),
+                accountsResponse.json(),
+                categoriesResponse.json(),
+                monthReferencesResponse.json(),
+            ]);
 
             setTransactions(transactionsData);
             setAccounts(accountsData);
             setCategories(categoriesData);
+            setMonthReferences(monthReferencesData);
         } catch (err) {
             setError("Erro ao carregar dados");
             console.error(err);
@@ -130,6 +154,11 @@ export const TransactionList: React.FC = () => {
         setSearchQuery("");
         setSelectedAccount("");
         setSelectedCategory("");
+        const current = getCurrentMonth();
+        const currentRef = monthReferences.find(
+            (ref) => ref.month === current.month && ref.year === current.year,
+        );
+        setSelectedMonthReference(currentRef?.id || "");
         await loadData();
     };
 
@@ -281,49 +310,28 @@ export const TransactionList: React.FC = () => {
                         </select>
                     </div>
 
-                    {/* Mês/Ano */}
+                    {/* Mês de Referência */}
                     <div>
                         <label
-                            htmlFor="month"
+                            htmlFor="monthReference"
                             className="block text-sm font-medium text-gray-300 mb-1"
                         >
-                            Mês/Ano
+                            Mês de Referência
                         </label>
-                        <div className="grid grid-cols-2 gap-2">
-                            <select
-                                id="month"
-                                value={selectedMonth}
-                                onChange={(e) =>
-                                    setSelectedMonth(parseInt(e.target.value))}
-                                className="px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
-                            >
-                                <option value="1">Janeiro</option>
-                                <option value="2">Fevereiro</option>
-                                <option value="3">Março</option>
-                                <option value="4">Abril</option>
-                                <option value="5">Maio</option>
-                                <option value="6">Junho</option>
-                                <option value="7">Julho</option>
-                                <option value="8">Agosto</option>
-                                <option value="9">Setembro</option>
-                                <option value="10">Outubro</option>
-                                <option value="11">Novembro</option>
-                                <option value="12">Dezembro</option>
-                            </select>
-                            <select
-                                id="year"
-                                value={selectedYear}
-                                onChange={(e) =>
-                                    setSelectedYear(parseInt(e.target.value))}
-                                className="px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
-                            >
-                                {generateYearOptions().map((year) => (
-                                    <option key={year} value={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <select
+                            id="monthReference"
+                            value={selectedMonthReference}
+                            onChange={(e) =>
+                                setSelectedMonthReference(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                        >
+                            <option value="">Todos os meses</option>
+                            {monthReferences.map((ref) => (
+                                <option key={ref.id} value={ref.id}>
+                                    {`${monthNames[ref.month - 1]}/${ref.year}`}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 

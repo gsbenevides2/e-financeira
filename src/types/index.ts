@@ -24,17 +24,27 @@ export interface Account {
   updatedAt: Date;
 }
 
+// Interface para MonthReference
+export interface MonthReference {
+  id: UUID;
+  month: number;
+  year: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Interface para Transaction baseada no diagrama UML
 export interface Transaction {
   id: UUID;
   dateTime: Date;
   thirdParty: string;
-  value: number; // Long no UML, usando number em TypeScript
+  value: number;
   address?: string;
   description: string;
   invoiceData?: string;
-  accountId: UUID; // FK para Account
-  categoryId: UUID; // FK para TransactionCategory
+  accountId: UUID;
+  categoryId: UUID;
+  monthReferenceId: UUID;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,6 +67,7 @@ export interface CreateTransactionDto {
   invoiceData?: string;
   accountId: UUID;
   categoryId: UUID;
+  monthReferenceId: UUID;
   relatedTransactionIds?: UUID[];
 }
 
@@ -81,6 +92,15 @@ export interface UpdateTransactionCategoryDto extends Partial<CreateTransactionC
   id: UUID;
 }
 
+export interface CreateMonthReferenceDto {
+  month: number;
+  year: number;
+}
+
+export interface UpdateMonthReferenceDto extends Partial<CreateMonthReferenceDto> {
+  id: UUID;
+}
+
 // Interface para filtros de pesquisa
 export interface TransactionSearchFilters {
   query?: string;
@@ -91,6 +111,9 @@ export interface TransactionSearchFilters {
   accountId?: UUID;
   categoryId?: UUID;
   thirdParty?: string;
+  month?: number;
+  year?: number;
+  monthReferenceId?: UUID;
 }
 
 // Interface para resumo mensal baseado no TransactionService do UML

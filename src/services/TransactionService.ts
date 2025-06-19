@@ -2,6 +2,7 @@ import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
 import { db } from "../db";
 import { accounts, transactionCategories, transactionRelations, transactions } from "../db/schema";
 import type { Account, CreateTransactionDto, MonthlySummary, Transaction, TransactionSearchFilters, UpdateTransactionDto, UUID } from "../types";
+import { MonthReferenceService } from "./MonthReferenceService";
 
 export class TransactionService {
   // Métodos CRUD básicos
@@ -17,6 +18,7 @@ export class TransactionService {
         invoiceData: dto.invoiceData,
         accountId: dto.accountId,
         categoryId: dto.categoryId,
+        monthReferenceId: dto.monthReferenceId,
       })
       .returning();
 
@@ -37,6 +39,7 @@ export class TransactionService {
       invoiceData: transaction.invoiceData || undefined,
       accountId: transaction.accountId,
       categoryId: transaction.categoryId,
+      monthReferenceId: transaction.monthReferenceId,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,
     };
@@ -70,6 +73,7 @@ export class TransactionService {
       invoiceData: transaction.invoiceData || undefined,
       accountId: transaction.accountId,
       categoryId: transaction.categoryId,
+      monthReferenceId: transaction.monthReferenceId,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,
     };
@@ -102,6 +106,7 @@ export class TransactionService {
       invoiceData: transaction.invoiceData || undefined,
       accountId: transaction.accountId,
       categoryId: transaction.categoryId,
+      monthReferenceId: transaction.monthReferenceId,
       createdAt: transaction.createdAt,
       updatedAt: transaction.updatedAt,
     };
@@ -120,6 +125,7 @@ export class TransactionService {
       invoiceData: tx.invoiceData || undefined,
       accountId: tx.accountId,
       categoryId: tx.categoryId,
+      monthReferenceId: tx.monthReferenceId,
       createdAt: tx.createdAt,
       updatedAt: tx.updatedAt,
     }));
@@ -193,6 +199,7 @@ export class TransactionService {
       invoiceData: tx.invoiceData || undefined,
       accountId: tx.accountId,
       categoryId: tx.categoryId,
+      monthReferenceId: tx.monthReferenceId,
       createdAt: tx.createdAt,
       updatedAt: tx.updatedAt,
     }));
@@ -244,6 +251,14 @@ export class TransactionService {
       whereConditions.push(eq(transactions.categoryId, filters.categoryId));
     }
 
+    // Filtro por mês/ano de referência
+    if (filters.monthReferenceId) {
+      whereConditions.push(eq(transactions.monthReferenceId, filters.monthReferenceId));
+    } else if (filters.month && filters.year) {
+      const monthReference = await MonthReferenceService.findOrCreate(filters.month, filters.year);
+      whereConditions.push(eq(transactions.monthReferenceId, monthReference.id));
+    }
+
     // Filtro por data
     if (filters.startDate) {
       whereConditions.push(gte(transactions.dateTime, filters.startDate));
@@ -276,6 +291,7 @@ export class TransactionService {
       invoiceData: tx.invoiceData || undefined,
       accountId: tx.accountId,
       categoryId: tx.categoryId,
+      monthReferenceId: tx.monthReferenceId,
       createdAt: tx.createdAt,
       updatedAt: tx.updatedAt,
     }));
@@ -328,8 +344,7 @@ export class TransactionService {
   }
 
   static async generateMonthlySummary(year: number, month: number): Promise<MonthlySummary> {
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+    const monthReference = await MonthReferenceService.findOrCreate(month, year);
 
     const monthlyTransactions = await db
       .select({
@@ -337,7 +352,7 @@ export class TransactionService {
         value: transactions.value,
       })
       .from(transactions)
-      .where(and(gte(transactions.dateTime, startDate), lte(transactions.dateTime, endDate)));
+      .where(eq(transactions.monthReferenceId, monthReference.id));
 
     const summary: MonthlySummary = {};
 

@@ -3,9 +3,27 @@ export function formatDate(date: Date | string): string {
   return d.toLocaleDateString("pt-BR");
 }
 
-export function formatDateTime(date: Date | string): string {
+export function formatDateTime(date: Date | string, includeTime: boolean = false): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleString("pt-BR");
+  return d.toLocaleString("pt-BR", {
+    hour: includeTime ? "2-digit" : undefined,
+    minute: includeTime ? "2-digit" : undefined,
+    second: includeTime ? "2-digit" : undefined,
+  });
+}
+
+export function formatDateTimeForInput(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  //return d.toISOString().slice(0, 16);
+  const month = d.getMonth() + 1;
+  const twoDigitMonth = month < 10 ? `0${month}` : month;
+  const day = d.getDate();
+  const twoDigitDay = day < 10 ? `0${day}` : day;
+  const hours = d.getHours();
+  const twoDigitHours = hours < 10 ? `0${hours}` : hours;
+  const minutes = d.getMinutes();
+  const twoDigitMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  return `${d.getFullYear()}-${twoDigitMonth}-${twoDigitDay}T${twoDigitHours}:${twoDigitMinutes}`;
 }
 
 export function formatCurrency(value: number): string {

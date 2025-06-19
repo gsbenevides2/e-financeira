@@ -1,17 +1,26 @@
-import { BarChart3, CreditCard, FileText, PlusIcon, Tag } from "lucide-react";
+import {
+  BarChart3,
+  Calendar,
+  CreditCard,
+  FileText,
+  PlusIcon,
+  Tag,
+} from "lucide-react";
 import React, { useState } from "react";
 import { AccountForm } from "./components/AccountForm";
 import { AccountList } from "./components/AccountList";
 import { CategoryForm } from "./components/CategoryForm";
 import { CategoryList } from "./components/CategoryList";
 import { MonthlyExpenseReport } from "./components/MonthlyExpenseReport";
+import { MonthReferenceForm } from "./components/MonthReferenceForm";
+import { MonthReferenceList } from "./components/MonthReferenceList";
 import { TransactionForm } from "./components/TransactionForm";
 import { TransactionList } from "./components/TransactionList";
 import { Button } from "./components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 
 type ModalState = {
-  type: "transaction" | "account" | "category" | null;
+  type: "transaction" | "account" | "category" | "monthReference" | null;
   isOpen: boolean;
 };
 
@@ -30,6 +39,8 @@ const App: React.FC = () => {
       handleOpenModal("account");
     } else if (currentTabValue === "categories") {
       handleOpenModal("category");
+    } else if (currentTabValue === "monthReferences") {
+      handleOpenModal("monthReference");
     }
   };
 
@@ -78,6 +89,13 @@ const App: React.FC = () => {
                 Categorias
               </TabsTrigger>
               <TabsTrigger
+                value="monthReferences"
+                className="data-[state=active]:bg-gray-700 data-[state=active]:text-gray-100"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Referências Mensais
+              </TabsTrigger>
+              <TabsTrigger
                 value="reports"
                 className="data-[state=active]:bg-gray-700 data-[state=active]:text-gray-100"
               >
@@ -95,6 +113,13 @@ const App: React.FC = () => {
                     ? <AccountForm onClose={handleCloseModal} />
                     : modal.type === "category"
                     ? <CategoryForm onClose={handleCloseModal} />
+                    : modal.type === "monthReference"
+                    ? (
+                      <MonthReferenceForm
+                        onClose={handleCloseModal}
+                        onSave={handleCloseModal}
+                      />
+                    )
                     : null
                 )
                 : null}
@@ -122,6 +147,10 @@ const App: React.FC = () => {
 
           <TabsContent value="categories">
             <CategoryList />
+          </TabsContent>
+
+          <TabsContent value="monthReferences">
+            <MonthReferenceList />
           </TabsContent>
 
           <TabsContent value="reports">

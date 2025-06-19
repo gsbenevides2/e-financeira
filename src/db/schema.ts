@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { decimal, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { decimal, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 // Enum para tipos de conta
 export const accountTypesEnum = pgEnum("account_types", ["Debit", "Credit"]);
@@ -21,6 +21,15 @@ export const accounts = pgTable("accounts", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Tabela MonthReference
+export const monthReferences = pgTable("month_references", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Tabela Transaction
 export const transactions = pgTable("transactions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -36,6 +45,9 @@ export const transactions = pgTable("transactions", {
   categoryId: uuid("category_id")
     .notNull()
     .references(() => transactionCategories.id),
+  monthReferenceId: uuid("month_reference_id")
+    .notNull()
+    .references(() => monthReferences.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -61,6 +73,10 @@ export const accountsRelations = relations(accounts, ({ many }) => ({
   transactions: many(transactions),
 }));
 
+export const monthReferencesRelations = relations(monthReferences, ({ many }) => ({
+  transactions: many(transactions),
+}));
+
 export const transactionsRelations = relations(transactions, ({ one, many }) => ({
   account: one(accounts, {
     fields: [transactions.accountId],
@@ -69,6 +85,10 @@ export const transactionsRelations = relations(transactions, ({ one, many }) => 
   category: one(transactionCategories, {
     fields: [transactions.categoryId],
     references: [transactionCategories.id],
+  }),
+  monthReference: one(monthReferences, {
+    fields: [transactions.monthReferenceId],
+    references: [monthReferences.id],
   }),
   // Relações para transações relacionadas
   parentRelations: many(transactionRelations, {

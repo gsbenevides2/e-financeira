@@ -6,7 +6,12 @@ import {
     TrendingUp,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import type { Account, Transaction, TransactionCategory } from "../types";
+import type {
+    Account,
+    MonthReference,
+    Transaction,
+    TransactionCategory,
+} from "../types";
 import { AccountTypes } from "../types";
 import { formatCurrency, getCurrentMonth } from "../utils/formatters";
 import { Button } from "./ui/button";
@@ -34,14 +39,12 @@ export const MonthlyExpenseReport: React.FC = () => {
     const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<TransactionCategory[]>([]);
-    const [selectedMonth, setSelectedMonth] = useState(() => {
-        const current = getCurrentMonth();
-        return current.month;
-    });
-    const [selectedYear, setSelectedYear] = useState(() => {
-        const current = getCurrentMonth();
-        return current.year;
-    });
+    const [monthReferences, setMonthReferences] = useState<MonthReference[]>(
+        [],
+    );
+    const [selectedMonthReference, setSelectedMonthReference] = useState<
+        string
+    >("");
     const [selectedAccountType, setSelectedAccountType] = useState<string>(
         "all",
     );
@@ -50,48 +53,72 @@ export const MonthlyExpenseReport: React.FC = () => {
 
     useEffect(() => {
         loadData();
-    }, [selectedMonth, selectedYear]);
+    }, []);
+
+    useEffect(() => {
+        const setCurrentMonthReference = async () => {
+            if (monthReferences.length > 0 && !selectedMonthReference) {
+                const current = getCurrentMonth();
+                const currentRef = monthReferences.find(
+                    (ref) =>
+                        ref.month === current.month &&
+                        ref.year === current.year,
+                );
+                if (currentRef) {
+                    setSelectedMonthReference(currentRef.id);
+                }
+            }
+        };
+        setCurrentMonthReference();
+    }, [monthReferences]);
 
     const loadData = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            const params = new URLSearchParams({
-                year: selectedYear.toString(),
-                month: selectedMonth.toString(),
-            });
+            const params = new URLSearchParams();
+            if (selectedMonthReference) {
+                params.append("monthReferenceId", selectedMonthReference);
+            }
 
-            const [transactionsResponse, accountsResponse, categoriesResponse] =
-                await Promise.all([
-                    fetch(
-                        `/api/transactions?startDate=${selectedYear}-${
-                            selectedMonth.toString().padStart(2, "0")
-                        }-01&endDate=${selectedYear}-${
-                            selectedMonth.toString().padStart(2, "0")
-                        }-31`,
-                    ),
-                    fetch("/api/accounts"),
-                    fetch("/api/categories"),
-                ]);
+            const [
+                transactionsResponse,
+                accountsResponse,
+                categoriesResponse,
+                monthReferencesResponse,
+            ] = await Promise.all([
+                fetch(`/api/transactions?${params.toString()}`),
+                fetch("/api/accounts"),
+                fetch("/api/categories"),
+                fetch("/api/month-references"),
+            ]);
 
             if (
-                !transactionsResponse.ok || !accountsResponse.ok ||
-                !categoriesResponse.ok
+                !transactionsResponse.ok ||
+                !accountsResponse.ok ||
+                !categoriesResponse.ok ||
+                !monthReferencesResponse.ok
             ) {
                 throw new Error("Erro ao carregar dados do relatório");
             }
 
-            const [transactionsData, accountsData, categoriesData] =
-                await Promise.all([
-                    transactionsResponse.json(),
-                    accountsResponse.json(),
-                    categoriesResponse.json(),
-                ]);
+            const [
+                transactionsData,
+                accountsData,
+                categoriesData,
+                monthReferencesData,
+            ] = await Promise.all([
+                transactionsResponse.json(),
+                accountsResponse.json(),
+                categoriesResponse.json(),
+                monthReferencesResponse.json(),
+            ]);
 
             setAllTransactions(transactionsData);
             setAccounts(accountsData);
             setCategories(categoriesData);
+            setMonthReferences(monthReferencesData);
 
             // Organizar dados por conta e categoria
             const expensesByAccount: ExpensesByAccount = {};
@@ -141,14 +168,9 @@ export const MonthlyExpenseReport: React.FC = () => {
         }
     };
 
-    const generateYearOptions = () => {
-        const currentYear = new Date().getFullYear();
-        const years = [];
-        for (let year = currentYear - 5; year <= currentYear + 1; year++) {
-            years.push(year);
-        }
-        return years;
-    };
+    useEffect(() => {
+        loadData();
+    }, [selectedMonthReference]);
 
     const monthNames = [
         "Janeiro",
@@ -203,14 +225,19 @@ export const MonthlyExpenseReport: React.FC = () => {
                 ),
             }));
 
+        const selectedRef = monthReferences.find((ref) =>
+            ref.id === selectedMonthReference
+        );
         const jsonStr = JSON.stringify(data, null, 2);
         const blob = new Blob([jsonStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `relatorio-mensal-${
-            monthNames[selectedMonth - 1]
-        }-${selectedYear}.json`;
+        a.download = selectedRef
+            ? `relatorio-mensal-${
+                monthNames[selectedRef.month - 1]
+            }-${selectedRef.year}.json`
+            : `relatorio-mensal.json`;
         a.click();
         URL.revokeObjectURL(url);
     };
@@ -245,42 +272,26 @@ export const MonthlyExpenseReport: React.FC = () => {
                 <div className="flex items-center space-x-4">
                     <div>
                         <label
-                            htmlFor="month"
+                            htmlFor="monthReference"
                             className="block text-sm font-medium text-gray-300 mb-1"
                         >
-                            Mês
+                            Mês de Referência
                         </label>
                         <select
-                            id="month"
-                            value={selectedMonth}
-                            onChange={(e) =>
-                                setSelectedMonth(Number(e.target.value))}
+                            id="monthReference"
+                            value={selectedMonthReference}
+                            onChange={(e) => {
+                                console.log(e.target.value);
+                                setSelectedMonthReference(e.target.value);
+                            }}
                             className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
-                            {monthNames.map((month, index) => (
-                                <option key={index + 1} value={index + 1}>
-                                    {month}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="year"
-                            className="block text-sm font-medium text-gray-300 mb-1"
-                        >
-                            Ano
-                        </label>
-                        <select
-                            id="year"
-                            value={selectedYear}
-                            onChange={(e) =>
-                                setSelectedYear(Number(e.target.value))}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
-                        >
-                            {generateYearOptions().map((year) => (
-                                <option key={year} value={year}>
-                                    {year}
+                            <option value="">
+                                Selecione um mês de referência
+                            </option>
+                            {monthReferences.map((ref) => (
+                                <option key={ref.id} value={ref.id}>
+                                    {`${monthNames[ref.month - 1]}/${ref.year}`}
                                 </option>
                             ))}
                         </select>

@@ -29,8 +29,8 @@ export const MonthlySummary: React.FC = () => {
             setError(null);
 
             const params = new URLSearchParams({
-                year: selectedYear.toString(),
                 month: selectedMonth.toString(),
+                year: selectedYear.toString(),
             });
 
             const [summaryResponse, accountsResponse] = await Promise.all([

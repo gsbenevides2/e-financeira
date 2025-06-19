@@ -1,6 +1,7 @@
 import { serve } from "bun";
 import index from "./index.html";
 import { AccountService } from "./services/AccountService";
+import { MonthReferenceService } from "./services/MonthReferenceService";
 import { TransactionCategoryService } from "./services/TransactionCategoryService";
 import { TransactionService } from "./services/TransactionService";
 
@@ -8,6 +9,131 @@ const server = serve({
     routes: {
         // Serve index.html for all unmatched routes.
         "/*": index,
+
+        // Month Reference Routes
+        "/api/month-references": {
+            async GET(req) {
+                try {
+                    const monthReferences = await MonthReferenceService
+                        .getAll();
+                    return Response.json(monthReferences);
+                } catch (error) {
+                    return Response.json({ error: error.message }, {
+                        status: 500,
+                    });
+                }
+            },
+            async POST(req) {
+                try {
+                    const data = await req.json();
+                    const monthReference = await MonthReferenceService.create(
+                        data,
+                    );
+                    return Response.json(monthReference, { status: 201 });
+                } catch (error) {
+                    return Response.json({ error: error.message }, {
+                        status: 500,
+                    });
+                }
+            },
+        },
+
+        "/api/month-references/:id": {
+            async GET(req) {
+                try {
+                    const monthReference = await MonthReferenceService.getById(
+                        req.params.id,
+                    );
+                    if (!monthReference) {
+                        return Response.json({
+                            error: "Month reference not found",
+                        }, {
+                            status: 404,
+                        });
+                    }
+                    return Response.json(monthReference);
+                } catch (error) {
+                    return Response.json({ error: error.message }, {
+                        status: 500,
+                    });
+                }
+            },
+            async PUT(req) {
+                try {
+                    const data = await req.json();
+                    const monthReference = await MonthReferenceService.update({
+                        id: req.params.id,
+                        ...data,
+                    });
+                    if (!monthReference) {
+                        return Response.json({
+                            error: "Month reference not found",
+                        }, {
+                            status: 404,
+                        });
+                    }
+                    return Response.json(monthReference);
+                } catch (error) {
+                    return Response.json({ error: error.message }, {
+                        status: 500,
+                    });
+                }
+            },
+            async DELETE(req) {
+                try {
+                    const success = await MonthReferenceService.delete(
+                        req.params.id,
+                    );
+                    if (!success) {
+                        return Response.json({
+                            error: "Month reference not found",
+                        }, {
+                            status: 404,
+                        });
+                    }
+                    return Response.json({ success: true });
+                } catch (error) {
+                    return Response.json({ error: error.message }, {
+                        status: 500,
+                    });
+                }
+            },
+        },
+
+        "/api/month-references/find-or-create": async (req) => {
+            try {
+                const url = new URL(req.url);
+                const month = parseInt(url.searchParams.get("month") || "");
+                const year = parseInt(url.searchParams.get("year") || "");
+
+                if (isNaN(month) || isNaN(year)) {
+                    return Response.json({
+                        error: "Month and year are required",
+                    }, {
+                        status: 400,
+                    });
+                }
+
+                const monthReference = await MonthReferenceService.findOrCreate(
+                    month,
+                    year,
+                );
+                return Response.json(monthReference);
+            } catch (error) {
+                return Response.json({ error: error.message }, { status: 500 });
+            }
+        },
+
+        "/api/month-references/:id/transactions": async (req) => {
+            try {
+                const transactions = await TransactionService.search({
+                    monthReferenceId: req.params.id,
+                });
+                return Response.json(transactions);
+            } catch (error) {
+                return Response.json({ error: error.message }, { status: 500 });
+            }
+        },
 
         // Transaction Category Routes
         "/api/categories": {
@@ -216,6 +342,9 @@ const server = serve({
                             ? parseFloat(url.searchParams.get("maxValue")!)
                             : undefined,
                         searchText: url.searchParams.get("searchText") ||
+                            undefined,
+                        monthReferenceId:
+                            url.searchParams.get("monthReferenceId") ||
                             undefined,
                     };
 
