@@ -11,6 +11,7 @@ import {
     formatDateTime,
     getCurrentMonth,
 } from "../utils/formatters";
+import { TransactionDetailsModal } from "./TransactionDetailsModal";
 import { TransactionEditForm } from "./TransactionEditForm";
 import { TransactionLinkForm } from "./TransactionLinkForm";
 import { Button } from "./ui/button";
@@ -34,6 +35,9 @@ export const TransactionList: React.FC = () => {
         Transaction | null
     >(null);
     const [linkingTransaction, setLinkingTransaction] = useState<
+        Transaction | null
+    >(null);
+    const [selectedTransaction, setSelectedTransaction] = useState<
         Transaction | null
     >(null);
 
@@ -62,7 +66,12 @@ export const TransactionList: React.FC = () => {
         if (selectedMonthReference) {
             loadData();
         }
-    }, [selectedMonthReference]);
+    }, [
+        selectedMonthReference,
+        selectedAccount,
+        selectedCategory,
+        searchQuery,
+    ]);
 
     const loadData = async () => {
         try {
@@ -420,6 +429,12 @@ export const TransactionList: React.FC = () => {
                                         </th>
                                         <th
                                             scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                                        >
+                                            Descrição
+                                        </th>
+                                        <th
+                                            scope="col"
                                             className="relative px-6 py-3"
                                         >
                                             <span className="sr-only">
@@ -432,7 +447,11 @@ export const TransactionList: React.FC = () => {
                                     {transactions.map((transaction) => (
                                         <tr
                                             key={transaction.id}
-                                            className="hover:bg-gray-700 transition-colors"
+                                            className="hover:bg-gray-700 transition-colors cursor-pointer"
+                                            onClick={() =>
+                                                setSelectedTransaction(
+                                                    transaction,
+                                                )}
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                                 {formatDateTime(
@@ -463,8 +482,18 @@ export const TransactionList: React.FC = () => {
                                                     transaction.categoryId,
                                                 )}
                                             </td>
+                                            <td className="px-6 py-4 text-sm text-gray-200 max-w-xs">
+                                                <div className="truncate">
+                                                    {transaction.description ||
+                                                        "-"}
+                                                </div>
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                                <div className="flex items-center space-x-2">
+                                                <div
+                                                    className="flex items-center space-x-2"
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()}
+                                                >
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
@@ -521,6 +550,13 @@ export const TransactionList: React.FC = () => {
                     transaction={linkingTransaction}
                     onClose={handleCloseLinkForm}
                     onSave={handleSaveTransaction}
+                />
+            )}
+
+            {selectedTransaction && (
+                <TransactionDetailsModal
+                    transaction={selectedTransaction}
+                    onClose={() => setSelectedTransaction(null)}
                 />
             )}
         </div>

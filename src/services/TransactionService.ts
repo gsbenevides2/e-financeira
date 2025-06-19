@@ -1,4 +1,4 @@
-import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
+import { and, eq, gte, ilike, inArray, lte, or } from "drizzle-orm";
 import { db } from "../db";
 import { accounts, transactionCategories, transactionRelations, transactions } from "../db/schema";
 import type { Account, CreateTransactionDto, MonthlySummary, Transaction, TransactionSearchFilters, UpdateTransactionDto, UUID } from "../types";
@@ -266,6 +266,10 @@ export class TransactionService {
 
     if (filters.endDate) {
       whereConditions.push(lte(transactions.dateTime, filters.endDate));
+    }
+
+    if (filters.query) {
+      whereConditions.push(or(ilike(transactions.description, `%${filters.query}%`), ilike(transactions.thirdParty, `%${filters.query}%`), ilike(transactions.address, `%${filters.query}%`)));
     }
 
     let transactionsList;

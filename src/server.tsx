@@ -341,7 +341,7 @@ const server = serve({
                         maxValue: url.searchParams.get("maxValue")
                             ? parseFloat(url.searchParams.get("maxValue")!)
                             : undefined,
-                        searchText: url.searchParams.get("searchText") ||
+                        query: url.searchParams.get("searchText") ||
                             undefined,
                         monthReferenceId:
                             url.searchParams.get("monthReferenceId") ||
