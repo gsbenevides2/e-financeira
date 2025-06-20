@@ -16,6 +16,8 @@ import { TransactionEditForm } from "./TransactionEditForm";
 import { TransactionLinkForm } from "./TransactionLinkForm";
 import { Button } from "./ui/button";
 
+const STORAGE_KEY_SELECTED_ACCOUNT = "e-financeira:selectedAccount";
+
 export const TransactionList: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [accounts, setAccounts] = useState<Account[]>([]);
@@ -26,7 +28,9 @@ export const TransactionList: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedAccount, setSelectedAccount] = useState<string>("");
+    const [selectedAccount, setSelectedAccount] = useState<string>(() => {
+        return localStorage.getItem(STORAGE_KEY_SELECTED_ACCOUNT) || "";
+    });
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [selectedMonthReference, setSelectedMonthReference] = useState<
         string
@@ -72,6 +76,10 @@ export const TransactionList: React.FC = () => {
         selectedCategory,
         searchQuery,
     ]);
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY_SELECTED_ACCOUNT, selectedAccount);
+    }, [selectedAccount]);
 
     const loadData = async () => {
         try {
@@ -168,6 +176,7 @@ export const TransactionList: React.FC = () => {
     const clearFilters = async () => {
         setSearchQuery("");
         setSelectedAccount("");
+        localStorage.removeItem(STORAGE_KEY_SELECTED_ACCOUNT);
         setSelectedCategory("");
         const current = getCurrentMonth();
         const currentRef = monthReferences.find(
