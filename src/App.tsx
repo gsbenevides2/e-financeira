@@ -69,6 +69,7 @@ const App: React.FC = () => {
             <TabsList className="bg-gray-800 border border-gray-700">
               <TabsTrigger
                 value="transactions"
+                label="Transações"
                 className="data-[state=active]:bg-gray-700 data-[state=active]:text-gray-100"
               >
                 <FileText className="w-4 h-4 mr-2" />
@@ -76,6 +77,7 @@ const App: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger
                 value="accounts"
+                label="Contas"
                 className="data-[state=active]:bg-gray-700 data-[state=active]:text-gray-100"
               >
                 <CreditCard className="w-4 h-4 mr-2" />
@@ -83,6 +85,7 @@ const App: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger
                 value="categories"
+                label="Categorias"
                 className="data-[state=active]:bg-gray-700 data-[state=active]:text-gray-100"
               >
                 <Tag className="w-4 h-4 mr-2" />
@@ -90,6 +93,7 @@ const App: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger
                 value="monthReferences"
+                label="Referências Mensais"
                 className="data-[state=active]:bg-gray-700 data-[state=active]:text-gray-100"
               >
                 <Calendar className="w-4 h-4 mr-2" />
@@ -97,6 +101,7 @@ const App: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger
                 value="reports"
+                label="Relatórios"
                 className="data-[state=active]:bg-gray-700 data-[state=active]:text-gray-100"
               >
                 <BarChart3 className="w-4 h-4 mr-2" />

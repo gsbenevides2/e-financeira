@@ -75,7 +75,7 @@ export const CategoryList: React.FC = () => {
     }
 
     return (
-        <div className="bg-gray-800 rounded-lg shadow overflow-hidden">
+        <div className="bg-gray-800 rounded-lg shadow overflow-hidden border border-gray-700">
             {error && (
                 <div className="bg-red-900 border border-red-800 p-4">
                     <div className="text-red-200">{error}</div>

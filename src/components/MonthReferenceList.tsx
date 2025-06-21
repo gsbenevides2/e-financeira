@@ -89,7 +89,7 @@ export const MonthReferenceList: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-200">
                     Meses de Referência
                 </h2>
