@@ -1,8 +1,7 @@
 import { X } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import type { Account, Transaction, TransactionCategory } from "../types";
 import { formatCurrency } from "../utils/formatters";
-import { TransactionDetailsModal } from "./TransactionDetailsModal";
 import { Button } from "./ui/button";
 
 interface CategoryTransactionsModalProps {
@@ -11,6 +10,9 @@ interface CategoryTransactionsModalProps {
     transactions: Transaction[];
     total: number;
     onClose: () => void;
+    onEdit: (transaction: Transaction) => void;
+    onDelete: (transactionId: string) => void;
+    onView: (transaction: Transaction) => void;
 }
 
 export const CategoryTransactionsModal: React.FC<
@@ -21,11 +23,8 @@ export const CategoryTransactionsModal: React.FC<
     transactions,
     total,
     onClose,
+    onView,
 }) => {
-    const [selectedTransaction, setSelectedTransaction] = useState<
-        Transaction | null
-    >(null);
-
     return (
         <>
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -55,14 +54,16 @@ export const CategoryTransactionsModal: React.FC<
                                 <div
                                     key={transaction.id}
                                     className="flex items-center justify-between py-3 px-4 bg-gray-700 rounded-lg border border-gray-600 cursor-pointer hover:bg-gray-600 transition-colors"
-                                    onClick={() =>
-                                        setSelectedTransaction(transaction)}
+                                    onClick={() => onView(transaction)}
                                 >
                                     <div className="flex-1">
                                         <div className="text-gray-200 font-medium">
-                                            {transaction.description}
+                                            {transaction.thirdParty}
                                         </div>
                                         <div className="text-sm text-gray-400">
+                                            {transaction.description}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
                                             {new Date(transaction.dateTime)
                                                 .toLocaleDateString(
                                                     "pt-BR",
@@ -101,13 +102,6 @@ export const CategoryTransactionsModal: React.FC<
                     </div>
                 </div>
             </div>
-
-            {selectedTransaction && (
-                <TransactionDetailsModal
-                    transaction={selectedTransaction}
-                    onClose={() => setSelectedTransaction(null)}
-                />
-            )}
         </>
     );
 };

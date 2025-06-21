@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Edit, Trash2, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import type { Account, Transaction, TransactionCategory } from "../types";
 import { formatCurrency, formatDateTime } from "../utils/formatters";
@@ -7,12 +7,16 @@ import { Button } from "./ui/button";
 interface TransactionDetailsModalProps {
     transaction: Transaction;
     onClose: () => void;
+    onEdit: (transaction: Transaction) => void;
+    onDelete: (transactionId: string) => void;
 }
 
 export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
     {
         transaction,
         onClose,
+        onEdit,
+        onDelete,
     },
 ) => {
     const [relatedTransactions, setRelatedTransactions] = useState<
@@ -77,6 +81,16 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
         return category?.name || "Categoria não encontrada";
     };
 
+    const handleEdit = () => {
+        onClose();
+        onEdit(transaction);
+    };
+
+    const handleDelete = () => {
+        onClose();
+        onDelete(transaction.id);
+    };
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
             <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-700">
@@ -91,14 +105,39 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
                             {formatCurrency(transaction.value)}
                         </p>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={onClose}
-                        className="p-1 text-gray-400 hover:text-white hover:bg-gray-700"
-                    >
-                        <X className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        {onEdit && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleEdit}
+                                className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
+                                title="Editar transação"
+                            >
+                                <Edit className="w-4 h-4" />
+                            </Button>
+                        )}
+                        {onDelete && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleDelete}
+                                className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                title="Excluir transação"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                            </Button>
+                        )}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onClose}
+                            className="p-2 text-gray-400 hover:text-white hover:bg-gray-700"
+                            title="Fechar"
+                        >
+                            <X className="w-4 h-4" />
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Content */}

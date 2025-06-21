@@ -566,6 +566,8 @@ export const TransactionList: React.FC = () => {
                 <TransactionDetailsModal
                     transaction={selectedTransaction}
                     onClose={() => setSelectedTransaction(null)}
+                    onEdit={handleEditTransaction}
+                    onDelete={handleDelete}
                 />
             )}
         </div>

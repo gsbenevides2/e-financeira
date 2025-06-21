@@ -15,6 +15,8 @@ import type {
 import { AccountTypes } from "../types";
 import { formatCurrency, getCurrentMonth } from "../utils/formatters";
 import { CategoryTransactionsModal } from "./CategoryTransactionsModal";
+import { TransactionDetailsModal } from "./TransactionDetailsModal";
+import { TransactionEditForm } from "./TransactionEditForm";
 import { Button } from "./ui/button";
 
 interface ExpensesByCategory {
@@ -59,6 +61,12 @@ export const MonthlyExpenseReport: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [modalData, setModalData] = useState<ModalData | null>(null);
+    const [editingTransaction, setEditingTransaction] = useState<
+        Transaction | null
+    >(null);
+    const [selectedTransaction, setSelectedTransaction] = useState<
+        Transaction | null
+    >(null);
 
     useEffect(() => {
         loadData();
@@ -266,6 +274,46 @@ export const MonthlyExpenseReport: React.FC = () => {
 
     const closeModal = () => {
         setModalData(null);
+    };
+
+    const handleEditTransaction = (transaction: Transaction) => {
+        setEditingTransaction(transaction);
+    };
+
+    const handleDeleteTransaction = async (transactionId: string) => {
+        if (!confirm("Tem certeza que deseja excluir esta transação?")) {
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await fetch(`/api/transactions/${transactionId}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao excluir transação");
+            }
+
+            // Recarregar os dados após exclusão
+            await loadData();
+
+            // Fechar o modal se estiver aberto
+            setModalData(null);
+            setSelectedTransaction(null);
+
+            console.log("Transação excluída com sucesso");
+        } catch (err) {
+            setError("Erro ao excluir transação");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleViewTransaction = (transaction: Transaction) => {
+        closeModal();
+        setSelectedTransaction(transaction);
     };
 
     if (loading) {
@@ -495,6 +543,26 @@ export const MonthlyExpenseReport: React.FC = () => {
                     transactions={modalData.transactions}
                     total={modalData.total}
                     onClose={closeModal}
+                    onEdit={handleEditTransaction}
+                    onDelete={handleDeleteTransaction}
+                    onView={handleViewTransaction}
+                />
+            )}
+
+            {editingTransaction && (
+                <TransactionEditForm
+                    transaction={editingTransaction}
+                    onClose={() => setEditingTransaction(null)}
+                    onSave={loadData}
+                />
+            )}
+
+            {selectedTransaction && (
+                <TransactionDetailsModal
+                    transaction={selectedTransaction}
+                    onClose={() => setSelectedTransaction(null)}
+                    onEdit={handleEditTransaction}
+                    onDelete={handleDeleteTransaction}
                 />
             )}
         </div>
