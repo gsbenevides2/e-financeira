@@ -149,7 +149,7 @@ export const MonthlySummary: React.FC = () => {
                             value={selectedMonth}
                             onChange={(e) =>
                                 setSelectedMonth(Number(e.target.value))}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
                             {monthNames.map((month, index) => (
                                 <option key={index + 1} value={index + 1}>
@@ -171,7 +171,7 @@ export const MonthlySummary: React.FC = () => {
                             value={selectedYear}
                             onChange={(e) =>
                                 setSelectedYear(Number(e.target.value))}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
                             {generateYearOptions().map((year) => (
                                 <option key={year} value={year}>

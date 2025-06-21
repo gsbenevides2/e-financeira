@@ -112,7 +112,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onClose }) => {
                             value={accountType}
                             onChange={(e) =>
                                 setAccountType(e.target.value as AccountTypes)}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                             disabled={loading}
                         >
                             <option value={AccountTypes.DEBIT}>

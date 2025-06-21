@@ -302,7 +302,7 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
                             name="accountId"
                             value={formData.accountId}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                             required
                         >
                             <option value="">Selecione uma conta</option>
@@ -326,7 +326,7 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
                             name="categoryId"
                             value={formData.categoryId}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                             required
                         >
                             <option value="">Selecione uma categoria</option>
@@ -350,7 +350,7 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
                             name="monthReferenceId"
                             value={formData.monthReferenceId}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                             required
                         >
                             <option value="">

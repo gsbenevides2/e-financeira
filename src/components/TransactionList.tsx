@@ -299,7 +299,7 @@ export const TransactionList: React.FC = () => {
                             id="account"
                             value={selectedAccount}
                             onChange={(e) => setSelectedAccount(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
                             <option value="">Todas as contas</option>
                             {accounts.map((account) => (
@@ -323,7 +323,7 @@ export const TransactionList: React.FC = () => {
                             value={selectedCategory}
                             onChange={(e) =>
                                 setSelectedCategory(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
                             <option value="">Todas as categorias</option>
                             {categories.map((category) => (
@@ -347,7 +347,7 @@ export const TransactionList: React.FC = () => {
                             value={selectedMonthReference}
                             onChange={(e) =>
                                 setSelectedMonthReference(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
                             <option value="">Todos os meses</option>
                             {monthReferences.map((ref) => (

@@ -284,7 +284,7 @@ export const MonthlyExpenseReport: React.FC = () => {
                                 console.log(e.target.value);
                                 setSelectedMonthReference(e.target.value);
                             }}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
                             <option value="">
                                 Selecione um mês de referência
@@ -311,7 +311,7 @@ export const MonthlyExpenseReport: React.FC = () => {
                             value={selectedAccountType}
                             onChange={(e) =>
                                 setSelectedAccountType(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
+                            className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
                         >
                             <option value="all">Todas</option>
                             <option value={AccountTypes.DEBIT}>Débito</option>
