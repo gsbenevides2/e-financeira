@@ -5,13 +5,90 @@ import { MonthReferenceService } from "./services/MonthReferenceService";
 import { TransactionCategoryService } from "./services/TransactionCategoryService";
 import { TransactionService } from "./services/TransactionService";
 
+// Interface for Bun request with params property
+interface BunRequest extends Request {
+    params: Record<string, string>;
+}
+
+// Basic Authentication Configuration
+const AUTH_CONFIG = {
+    username: process.env.AUTH_USERNAME || "admin",
+    password: process.env.AUTH_PASSWORD || "password123",
+};
+
+// Authentication middleware
+function requireAuth(req: BunRequest): Response | null {
+    const authHeader = req.headers.get("Authorization");
+
+    if (!authHeader || !authHeader.startsWith("Basic ")) {
+        return new Response("Authentication required", {
+            status: 401,
+            headers: {
+                "WWW-Authenticate": 'Basic realm="E-Financeira API"',
+            },
+        });
+    }
+
+    try {
+        const base64Credentials = authHeader.slice(6); // Remove "Basic "
+        const credentials = atob(base64Credentials);
+        const [username, password] = credentials.split(":");
+
+        if (
+            username !== AUTH_CONFIG.username ||
+            password !== AUTH_CONFIG.password
+        ) {
+            return new Response("Invalid credentials", {
+                status: 401,
+                headers: {
+                    "WWW-Authenticate": 'Basic realm="E-Financeira API"',
+                },
+            });
+        }
+
+        return null; // Authentication successful
+    } catch (error) {
+        return new Response("Invalid authentication format", {
+            status: 401,
+            headers: {
+                "WWW-Authenticate": 'Basic realm="E-Financeira API"',
+            },
+        });
+    }
+}
+
+// Helper function to wrap route handlers with authentication
+function withAuth(handler: (req: BunRequest) => Promise<Response> | Response) {
+    return async (req: BunRequest) => {
+        const authResponse = requireAuth(req);
+        if (authResponse) {
+            return authResponse;
+        }
+        return await handler(req);
+    };
+}
+
+// Helper function to wrap route objects with authentication
+function withAuthObject(
+    routes: Record<string, (req: BunRequest) => Promise<Response> | Response>,
+) {
+    const protectedRoutes: Record<
+        string,
+        (req: BunRequest) => Promise<Response> | Response
+    > = {};
+    for (const [method, handler] of Object.entries(routes)) {
+        protectedRoutes[method] = withAuth(handler);
+    }
+    return protectedRoutes;
+}
+
 const server = serve({
     routes: {
-        // Serve index.html for all unmatched routes.
+        // Serve index.html for all unmatched routes (no auth required for static files)
         "/*": index,
 
         // Month Reference Routes
-        "/api/month-references": {
+        "/api/month-references": withAuthObject({
             async GET(req) {
                 try {
                     const monthReferences = await MonthReferenceService
@@ -36,9 +113,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/month-references/:id": {
+        "/api/month-references/:id": withAuthObject({
             async GET(req) {
                 try {
                     const monthReference = await MonthReferenceService.getById(
@@ -98,9 +175,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/month-references/find-or-create": async (req) => {
+        "/api/month-references/find-or-create": withAuth(async (req) => {
             try {
                 const url = new URL(req.url);
                 const month = parseInt(url.searchParams.get("month") || "");
@@ -122,9 +199,9 @@ const server = serve({
             } catch (error) {
                 return Response.json({ error: error.message }, { status: 500 });
             }
-        },
+        }),
 
-        "/api/month-references/:id/transactions": async (req) => {
+        "/api/month-references/:id/transactions": withAuth(async (req) => {
             try {
                 const transactions = await TransactionService.search({
                     monthReferenceId: req.params.id,
@@ -133,10 +210,10 @@ const server = serve({
             } catch (error) {
                 return Response.json({ error: error.message }, { status: 500 });
             }
-        },
+        }),
 
         // Transaction Category Routes
-        "/api/categories": {
+        "/api/categories": withAuthObject({
             async GET(req) {
                 try {
                     const categories = await TransactionCategoryService
@@ -161,9 +238,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/categories/:id": {
+        "/api/categories/:id": withAuthObject({
             async GET(req) {
                 try {
                     const category = await TransactionCategoryService.getById(
@@ -205,10 +282,10 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
         // Account Routes
-        "/api/accounts": {
+        "/api/accounts": withAuthObject({
             async GET(req) {
                 try {
                     const accounts = await AccountService.getAll();
@@ -230,9 +307,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/accounts/:id": {
+        "/api/accounts/:id": withAuthObject({
             async GET(req) {
                 try {
                     const account = await AccountService.getById(req.params.id);
@@ -272,9 +349,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/accounts/:id/balance": async (req) => {
+        "/api/accounts/:id/balance": withAuth(async (req) => {
             try {
                 const balance = await AccountService.calculateBalance(
                     req.params.id,
@@ -283,9 +360,9 @@ const server = serve({
             } catch (error) {
                 return Response.json({ error: error.message }, { status: 500 });
             }
-        },
+        }),
 
-        "/api/accounts/:id/transactions": async (req) => {
+        "/api/accounts/:id/transactions": withAuth(async (req) => {
             try {
                 const transactions = await AccountService.listTransactions(
                     req.params.id,
@@ -294,9 +371,9 @@ const server = serve({
             } catch (error) {
                 return Response.json({ error: error.message }, { status: 500 });
             }
-        },
+        }),
 
-        "/api/accounts/:id/monthly-report": async (req) => {
+        "/api/accounts/:id/monthly-report": withAuth(async (req) => {
             try {
                 const url = new URL(req.url);
                 const year = parseInt(
@@ -317,10 +394,10 @@ const server = serve({
             } catch (error) {
                 return Response.json({ error: error.message }, { status: 500 });
             }
-        },
+        }),
 
         // Transaction Routes
-        "/api/transactions": {
+        "/api/transactions": withAuthObject({
             async GET(req) {
                 try {
                     const url = new URL(req.url);
@@ -376,9 +453,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/transactions/:id": {
+        "/api/transactions/:id": withAuthObject({
             async GET(req) {
                 try {
                     const transaction = await TransactionService.getById(
@@ -428,9 +505,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/transactions/:id/link": {
+        "/api/transactions/:id/link": withAuthObject({
             async POST(req) {
                 try {
                     const { relatedTransactionId } = await req.json();
@@ -445,9 +522,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/transactions/:id/unlink": {
+        "/api/transactions/:id/unlink": withAuthObject({
             async POST(req) {
                 try {
                     const { relatedTransactionId } = await req.json();
@@ -462,9 +539,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/transactions/:id/move": {
+        "/api/transactions/:id/move": withAuthObject({
             async POST(req) {
                 try {
                     const { newAccountId } = await req.json();
@@ -479,9 +556,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/transactions/:id/related": {
+        "/api/transactions/:id/related": withAuthObject({
             async GET(req) {
                 try {
                     const relatedTransactions = await TransactionService
@@ -495,9 +572,9 @@ const server = serve({
                     });
                 }
             },
-        },
+        }),
 
-        "/api/transactions/monthly-report": async (req) => {
+        "/api/transactions/monthly-report": withAuth(async (req) => {
             try {
                 const url = new URL(req.url);
                 const year = parseInt(
@@ -517,7 +594,7 @@ const server = serve({
             } catch (error) {
                 return Response.json({ error: error.message }, { status: 500 });
             }
-        },
+        }),
     },
 
     development: process.env.NODE_ENV !== "production" && {
@@ -532,3 +609,10 @@ const server = serve({
 console.log(`🚀 E-Financeira server running at ${server.url}`);
 console.log("📊 Sistema de Gestão Financeira com API REST");
 console.log("🔗 Acesse o sistema no navegador para começar");
+console.log("🔐 Authentication enabled for all API routes");
+console.log(
+    `   Default credentials: ${AUTH_CONFIG.username}/${AUTH_CONFIG.password}`,
+);
+console.log(
+    "   Set AUTH_USERNAME and AUTH_PASSWORD environment variables to change",
+);
