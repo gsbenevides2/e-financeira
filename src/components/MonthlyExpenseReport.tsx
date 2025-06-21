@@ -4,6 +4,7 @@ import {
     Download,
     TrendingDown,
     TrendingUp,
+    X,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import type {
@@ -32,6 +33,13 @@ interface ExpensesByAccount {
     };
 }
 
+interface ModalData {
+    category: TransactionCategory;
+    account: Account;
+    transactions: Transaction[];
+    total: number;
+}
+
 export const MonthlyExpenseReport: React.FC = () => {
     const [expensesByAccount, setExpensesByAccount] = useState<
         ExpensesByAccount
@@ -50,6 +58,7 @@ export const MonthlyExpenseReport: React.FC = () => {
     );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [modalData, setModalData] = useState<ModalData | null>(null);
 
     useEffect(() => {
         loadData();
@@ -242,6 +251,23 @@ export const MonthlyExpenseReport: React.FC = () => {
         URL.revokeObjectURL(url);
     };
 
+    const openModal = (categoryData: any, account: Account) => {
+        const sortedTransactions = [...categoryData.transactions].sort(
+            (a, b) => Math.abs(b.value) - Math.abs(a.value),
+        );
+
+        setModalData({
+            category: categoryData.category,
+            account,
+            transactions: sortedTransactions,
+            total: categoryData.total,
+        });
+    };
+
+    const closeModal = () => {
+        setModalData(null);
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center py-8">
@@ -430,7 +456,12 @@ export const MonthlyExpenseReport: React.FC = () => {
                                     .map((categoryData) => (
                                         <div
                                             key={categoryData.category.id}
-                                            className="flex items-center justify-between py-2 border-t border-gray-700"
+                                            className="flex items-center justify-between py-2 border-t border-gray-700 cursor-pointer hover:bg-gray-700 px-2 rounded transition-colors"
+                                            onClick={() =>
+                                                openModal(
+                                                    categoryData,
+                                                    account,
+                                                )}
                                         >
                                             <div className="flex items-center">
                                                 <Calendar className="w-4 h-4 text-gray-400 mr-2" />
@@ -456,6 +487,83 @@ export const MonthlyExpenseReport: React.FC = () => {
                     );
                 })}
             </div>
+
+            {modalData && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-gray-800 border border-gray-700 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-hidden">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-200">
+                                    {modalData.category.name}
+                                </h2>
+                                <p className="text-sm text-gray-400">
+                                    {modalData.account.name} -{" "}
+                                    {formatCurrency(modalData.total)}
+                                </p>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={closeModal}
+                                className="text-gray-400 hover:text-gray-200"
+                            >
+                                <X className="w-5 h-5" />
+                            </Button>
+                        </div>
+
+                        <div className="p-4 overflow-y-auto max-h-[60vh]">
+                            <div className="space-y-2">
+                                {modalData.transactions.map((transaction) => (
+                                    <div
+                                        key={transaction.id}
+                                        className="flex items-center justify-between py-3 px-4 bg-gray-700 rounded-lg border border-gray-600"
+                                    >
+                                        <div className="flex-1">
+                                            <div className="text-gray-200 font-medium">
+                                                {transaction.description}
+                                            </div>
+                                            <div className="text-sm text-gray-400">
+                                                {new Date(transaction.dateTime)
+                                                    .toLocaleDateString(
+                                                        "pt-BR",
+                                                    )}
+                                            </div>
+                                        </div>
+                                        <div
+                                            className={`text-lg font-semibold ${
+                                                transaction.value >= 0
+                                                    ? "text-green-400"
+                                                    : "text-red-400"
+                                            }`}
+                                        >
+                                            {formatCurrency(transaction.value)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="p-4 border-t border-gray-700 bg-gray-750">
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-300">
+                                    Total de {modalData.transactions.length}
+                                    {" "}
+                                    transação(ões)
+                                </span>
+                                <span
+                                    className={`text-lg font-semibold ${
+                                        modalData.total >= 0
+                                            ? "text-green-400"
+                                            : "text-red-400"
+                                    }`}
+                                >
+                                    {formatCurrency(modalData.total)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
