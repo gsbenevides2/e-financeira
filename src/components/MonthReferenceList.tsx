@@ -89,18 +89,6 @@ export const MonthReferenceList: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-200">
-                    Meses de Referência
-                </h2>
-                <Button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-blue-600 hover:bg-blue-700"
-                >
-                    Adicionar Mês de Referência
-                </Button>
-            </div>
-
             {showAddForm && (
                 <MonthReferenceForm
                     onClose={handleCloseForm}
