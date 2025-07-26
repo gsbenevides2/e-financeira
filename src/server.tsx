@@ -212,6 +212,24 @@ const server = serve({
             }
         }),
 
+        "/api/month-references/:id/toggle-active": withAuth(async (req) => {
+            try {
+                const monthReference = await MonthReferenceService.toggleActive(
+                    req.params.id,
+                );
+                if (!monthReference) {
+                    return Response.json({
+                        error: "Month reference not found",
+                    }, {
+                        status: 404,
+                    });
+                }
+                return Response.json(monthReference);
+            } catch (error) {
+                return Response.json({ error: error.message }, { status: 500 });
+            }
+        }),
+
         // Transaction Category Routes
         "/api/categories": withAuthObject({
             async GET(req) {

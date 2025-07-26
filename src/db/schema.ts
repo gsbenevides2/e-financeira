@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { decimal, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, decimal, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 // Enum para tipos de conta
 export const accountTypesEnum = pgEnum("account_types", ["Debit", "Credit"]);
@@ -26,6 +26,7 @@ export const monthReferences = pgTable("month_references", {
   id: uuid("id").primaryKey().defaultRandom(),
   month: integer("month").notNull(),
   year: integer("year").notNull(),
+  active: boolean("active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

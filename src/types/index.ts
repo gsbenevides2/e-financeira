@@ -29,6 +29,7 @@ export interface MonthReference {
   id: UUID;
   month: number;
   year: number;
+  active: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -95,6 +96,7 @@ export interface UpdateTransactionCategoryDto extends Partial<CreateTransactionC
 export interface CreateMonthReferenceDto {
   month: number;
   year: number;
+  active?: boolean;
 }
 
 export interface UpdateMonthReferenceDto extends Partial<CreateMonthReferenceDto> {

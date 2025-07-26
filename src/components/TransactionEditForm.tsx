@@ -77,7 +77,9 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
 
             setAccounts(accountsData);
             setCategories(categoriesData);
-            setMonthReferences(monthReferencesData);
+            // Filtrar apenas referências mensais ativas
+            const activeMonthReferences = monthReferencesData.filter((ref: MonthReference) => ref.active);
+            setMonthReferences(activeMonthReferences);
 
             // Se não houver transação sendo editada, selecionar a primeira conta e categoria
             if (!transaction) {

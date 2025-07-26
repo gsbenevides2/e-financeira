@@ -1,0 +1,1 @@
+ALTER TABLE "month_references" ADD COLUMN "active" boolean DEFAULT true NOT NULL;

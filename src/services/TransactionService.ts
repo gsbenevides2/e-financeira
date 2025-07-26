@@ -7,6 +7,15 @@ import { MonthReferenceService } from "./MonthReferenceService";
 export class TransactionService {
   // Métodos CRUD básicos
   static async create(dto: CreateTransactionDto): Promise<Transaction> {
+    // Verificar se a referência mensal está ativa
+    const monthReference = await MonthReferenceService.getById(dto.monthReferenceId);
+    if (!monthReference) {
+      throw new Error("Referência mensal não encontrada");
+    }
+    if (!monthReference.active) {
+      throw new Error("Não é possível criar transações para referências mensais inativas");
+    }
+
     const [transaction] = await db
       .insert(transactions)
       .values({

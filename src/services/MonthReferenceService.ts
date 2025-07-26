@@ -10,6 +10,7 @@ export class MonthReferenceService {
       .values({
         month: dto.month,
         year: dto.year,
+        active: dto.active ?? true,
       })
       .returning();
 
@@ -17,19 +18,22 @@ export class MonthReferenceService {
       id: monthReference.id,
       month: monthReference.month,
       year: monthReference.year,
+      active: monthReference.active,
       createdAt: monthReference.createdAt,
       updatedAt: monthReference.updatedAt,
     };
   }
 
   static async update(dto: UpdateMonthReferenceDto): Promise<MonthReference | undefined> {
+    const updateData: any = { updatedAt: new Date() };
+    
+    if (dto.month !== undefined) updateData.month = dto.month;
+    if (dto.year !== undefined) updateData.year = dto.year;
+    if (dto.active !== undefined) updateData.active = dto.active;
+
     const [monthReference] = await db
       .update(monthReferences)
-      .set({
-        month: dto.month,
-        year: dto.year,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(monthReferences.id, dto.id))
       .returning();
 
@@ -39,6 +43,7 @@ export class MonthReferenceService {
       id: monthReference.id,
       month: monthReference.month,
       year: monthReference.year,
+      active: monthReference.active,
       createdAt: monthReference.createdAt,
       updatedAt: monthReference.updatedAt,
     };
@@ -59,6 +64,7 @@ export class MonthReferenceService {
       id: monthReference.id,
       month: monthReference.month,
       year: monthReference.year,
+      active: monthReference.active,
       createdAt: monthReference.createdAt,
       updatedAt: monthReference.updatedAt,
     };
@@ -71,6 +77,7 @@ export class MonthReferenceService {
       id: mr.id,
       month: mr.month,
       year: mr.year,
+      active: mr.active,
       createdAt: mr.createdAt,
       updatedAt: mr.updatedAt,
     }));
@@ -87,11 +94,36 @@ export class MonthReferenceService {
         id: existingMonthReference.id,
         month: existingMonthReference.month,
         year: existingMonthReference.year,
+        active: existingMonthReference.active,
         createdAt: existingMonthReference.createdAt,
         updatedAt: existingMonthReference.updatedAt,
       };
     }
 
     return this.create({ month, year });
+  }
+
+  static async getActiveOnly(): Promise<MonthReference[]> {
+    const monthReferencesList = await db
+      .select()
+      .from(monthReferences)
+      .where(eq(monthReferences.active, true))
+      .orderBy(monthReferences.year, monthReferences.month);
+
+    return monthReferencesList.map((mr) => ({
+      id: mr.id,
+      month: mr.month,
+      year: mr.year,
+      active: mr.active,
+      createdAt: mr.createdAt,
+      updatedAt: mr.updatedAt,
+    }));
+  }
+
+  static async toggleActive(id: UUID): Promise<MonthReference | undefined> {
+    const monthReference = await this.getById(id);
+    if (!monthReference) return undefined;
+
+    return this.update({ id, active: !monthReference.active });
   }
 }

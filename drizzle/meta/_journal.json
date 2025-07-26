@@ -15,6 +15,13 @@
       "when": 1750364050521,
       "tag": "0001_luxuriant_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753561007954,
+      "tag": "0002_wealthy_miss_america",
+      "breakpoints": true
     }
   ]
 }

@@ -64,7 +64,9 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
 
             setAccounts(accountsData);
             setCategories(categoriesData);
-            setMonthReferences(monthReferencesData);
+            // Filtrar apenas referências mensais ativas
+            const activeMonthReferences = monthReferencesData.filter((ref: MonthReference) => ref.active);
+            setMonthReferences(activeMonthReferences);
 
             // Selecionar primeira conta, categoria e mês de referência por padrão se existirem
             if (accountsData.length > 0) {
@@ -79,10 +81,10 @@ export const TransactionForm: React.FC<TransactionFormProps> = (
                     categoryId: categoriesData[0].id,
                 }));
             }
-            if (monthReferencesData.length > 0) {
+            if (activeMonthReferences.length > 0) {
                 setFormData((prev) => ({
                     ...prev,
-                    monthReferenceId: monthReferencesData[0].id,
+                    monthReferenceId: activeMonthReferences[0].id,
                 }));
             }
         } catch (err) {
