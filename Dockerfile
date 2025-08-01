@@ -10,6 +10,9 @@ COPY package*.json bun.lock ./
 # Install dependencies
 RUN bun install
 
+# Build the CSS
+RUN bun run build:css
+
 # Copy project files
 COPY . .
 

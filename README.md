@@ -174,7 +174,6 @@ bun run dev          # Inicia servidor de desenvolvimento
 
 # Produção
 bun run start        # Inicia servidor de produção
-bun run build        # Build da aplicação
 
 # Banco de dados
 bun run db:generate  # Gera migrações
