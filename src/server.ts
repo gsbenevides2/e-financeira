@@ -4,6 +4,7 @@ import staticPlugin from "@elysiajs/static";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import api from "./backend/api";
+import { coolifyHealthChecker } from "./plugins/coolify-healtcheker";
 import { frontEndBuilder } from "./plugins/frontend-builder";
 
 const app = new Elysia()
@@ -39,18 +40,16 @@ const app = new Elysia()
     })
   )
   .use(staticPlugin())
+  .use(coolifyHealthChecker)
   .use(api)
+
   .use(
     frontEndBuilder({
       react: {
         entrypoint: "./src/frontend/index.tsx",
-        publicDir: "./public",
       },
       tailwind: {
         source: "./src/frontend/styles/app.css",
-        minify: true,
-        map: false,
-        autoprefixer: false,
       },
     })
   )
