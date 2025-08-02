@@ -1,6 +1,5 @@
 import { cors } from "@elysiajs/cors";
 import serverTiming from "@elysiajs/server-timing";
-import staticPlugin from "@elysiajs/static";
 import swagger from "@elysiajs/swagger";
 import { logger } from "@grotto/logysia";
 import { Elysia } from "elysia";
@@ -63,7 +62,6 @@ const app = new Elysia()
       },
     })
   )
-  .use(staticPlugin())
   .use(coolifyHealthChecker)
   .use(api)
 

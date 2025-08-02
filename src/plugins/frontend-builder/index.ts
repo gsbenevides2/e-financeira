@@ -32,6 +32,9 @@ export const frontEndBuilder = async (options: FrontendBuilderOptions) => {
         hide: true,
       },
     })
+    .get("/favicon.ico", () => {
+      return Bun.file("src/frontend/favicon.ico");
+    })
     .onError({ as: "global" }, async ({ error, request }) => {
       const is404 = "status" in error && error.status === 404;
       const isBrowser = request.headers.get("accept")?.includes("text/html");

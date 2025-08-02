@@ -27,7 +27,7 @@ export const Root = () => {
                     content="width=device-width, initial-scale=1"
                 />
                 <link rel="stylesheet" href="/styles.css" />
-                <link rel="icon" href="/public/favicon.ico" />
+                <link rel="icon" href="/favicon.ico" />
             </head>
             <body>
                 <Outlet />
