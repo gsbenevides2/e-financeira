@@ -1,17 +1,17 @@
-import type tw from "@tailwindcss/postcss"
+import type tw from "@tailwindcss/postcss";
 
-type PluginOptions = Parameters<typeof tw>[0]
+type PluginOptions = Parameters<typeof tw>[0];
 
 export interface ReactBuilderOptions {
-  entrypoint: string
+	entrypoint: string;
 }
 
 export interface TailwindBuilderOptions {
-  source: string
-  tailwindConfig?: PluginOptions
+	source: string;
+	tailwindConfig?: PluginOptions;
 }
 
 export interface FrontendBuilderOptions {
-  react: ReactBuilderOptions
-  tailwind: TailwindBuilderOptions
+	react: ReactBuilderOptions;
+	tailwind: TailwindBuilderOptions;
 }

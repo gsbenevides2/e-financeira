@@ -1,31 +1,28 @@
 {
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.formatOnSave": true
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.formatOnSave": true
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features",
-    "editor.formatOnSave": false
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "none",
-    "editor.formatOnSave": false
-  },
-  "[json]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.formatOnSave": true
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.formatOnSave": true
-  }
+	"editor.defaultFormatter": "biomejs.biome",
+	"editor.formatOnSave": true,
+	"[javascript]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
+	},
+	"[json]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
+	}
 }

@@ -1,52 +1,59 @@
-import crypto from "node:crypto"
-import * as jose from "jose"
+import crypto from "node:crypto";
+import * as jose from "jose";
 
 export class InvalidCredentialsError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = "InvalidCredentialsError"
-  }
+	constructor(message: string) {
+		super(message);
+		this.name = "InvalidCredentialsError";
+	}
 }
 
 export class AuthService {
-  token: string | null = null
-  static username: string = Bun.env.AUTH_USERNAME ?? ""
-  static password: string = Bun.env.AUTH_PASSWORD ?? ""
-  static secret: string = Bun.env.AUTH_SECRET ?? ""
-  static sessionId: string | null = null
+	token: string | null = null;
+	static username: string = Bun.env.AUTH_USERNAME ?? "";
+	static password: string = Bun.env.AUTH_PASSWORD ?? "";
+	static secret: string = Bun.env.AUTH_SECRET ?? "";
+	static sessionId: string | null = null;
 
-  static generateUniqueSessionId() {
-    this.sessionId = crypto.randomBytes(32).toString("hex")
-  }
+	static generateUniqueSessionId() {
+		AuthService.sessionId = crypto.randomBytes(32).toString("hex");
+	}
 
-  static async authenticate(username: string, password: string) {
-    if (username !== this.username) {
-      return new InvalidCredentialsError("Invalid email")
-    }
+	static async authenticate(username: string, password: string) {
+		if (username !== AuthService.username) {
+			return new InvalidCredentialsError("Invalid email");
+		}
 
-    if (password !== this.password) {
-      return new InvalidCredentialsError("Invalid password")
-    }
+		if (password !== AuthService.password) {
+			return new InvalidCredentialsError("Invalid password");
+		}
 
-    this.generateUniqueSessionId()
+		AuthService.generateUniqueSessionId();
 
-    const privateKey = new TextEncoder().encode(`${this.secret}:${this.sessionId}`)
-    const token = await new jose.SignJWT({ username }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("1h").sign(privateKey)
+		const privateKey = new TextEncoder().encode(
+			`${AuthService.secret}:${AuthService.sessionId}`,
+		);
+		const token = await new jose.SignJWT({ username })
+			.setProtectedHeader({ alg: "HS256" })
+			.setExpirationTime("1h")
+			.sign(privateKey);
 
-    return token
-  }
+		return token;
+	}
 
-  static async verify(token: string) {
-    if (!this.sessionId) {
-      return new InvalidCredentialsError("No session id found")
-    }
+	static async verify(token: string) {
+		if (!AuthService.sessionId) {
+			return new InvalidCredentialsError("No session id found");
+		}
 
-    const privateKey = new TextEncoder().encode(`${this.secret}:${this.sessionId}`)
-    const { payload } = await jose.jwtVerify(token, privateKey)
-    return payload
-  }
+		const privateKey = new TextEncoder().encode(
+			`${AuthService.secret}:${AuthService.sessionId}`,
+		);
+		const { payload } = await jose.jwtVerify(token, privateKey);
+		return payload;
+	}
 
-  static async logout() {
-    this.sessionId = null
-  }
+	static async logout() {
+		AuthService.sessionId = null;
+	}
 }
