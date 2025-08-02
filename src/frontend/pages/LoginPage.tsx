@@ -1,6 +1,5 @@
 import { LogIn } from "lucide-react";
-import type React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../components/ui/button";
 import {
@@ -12,7 +11,7 @@ import {
 import { Input } from "../components/ui/input";
 import { apiClient } from "../services/api";
 
-export const LoginPage: React.FC = () => {
+export function LoginPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [showInvalidCredentials, setShowInvalidCredentials] = useState(false);
@@ -106,4 +105,4 @@ export const LoginPage: React.FC = () => {
 			</div>
 		</div>
 	);
-};
+}

@@ -1,8 +1,8 @@
 import { FileX } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { Button } from "../components/ui/button";
 
-export const NotFound: React.FC = () => {
+export function NotFound() {
 	const handleGoHome = () => {
 		window.location.href = "/";
 	};
@@ -34,4 +34,4 @@ export const NotFound: React.FC = () => {
 			</div>
 		</div>
 	);
-};
+}
