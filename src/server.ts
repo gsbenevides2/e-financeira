@@ -2,14 +2,30 @@ import { cors } from "@elysiajs/cors";
 import serverTiming from "@elysiajs/server-timing";
 import staticPlugin from "@elysiajs/static";
 import swagger from "@elysiajs/swagger";
+import { logger } from "@grotto/logysia";
 import { Elysia } from "elysia";
 import api from "./backend/api";
 import { coolifyHealthChecker } from "./plugins/coolify-healtcheker";
 import { frontEndBuilder } from "./plugins/frontend-builder";
+import { isDevelopmentMode } from "./utils/isProductionMode";
 
 const app = new Elysia()
+  .use(
+    logger({
+      logIP: true,
+      writer: {
+        write(msg: string) {
+          console.log(msg);
+        },
+      },
+    })
+  )
   .use(cors())
-  .use(serverTiming())
+  .use(
+    serverTiming({
+      enabled: isDevelopmentMode(),
+    })
+  )
   .use(
     swagger({
       documentation: {
@@ -19,6 +35,10 @@ const app = new Elysia()
           description: "E-Financeira - Gestão Financeira",
         },
         tags: [
+          {
+            name: "Auth",
+            description: "Auth endpoints",
+          },
           {
             name: "Accounts",
             description: "Get accounts informations",
@@ -34,6 +54,10 @@ const app = new Elysia()
           {
             name: "Transactions",
             description: "Get transactions informations",
+          },
+          {
+            name: "Coolify",
+            description: "Coolify endpoints",
           },
         ],
       },
