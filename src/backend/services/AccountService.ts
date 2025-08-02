@@ -191,7 +191,7 @@ export class AccountService {
 				(tx) =>
 					tx.description.toLowerCase().includes(queryLower) ||
 					tx.thirdParty.toLowerCase().includes(queryLower) ||
-					(tx.address && tx.address.toLowerCase().includes(queryLower)),
+					(tx.address ? tx.address.toLowerCase().includes(queryLower) : false),
 			);
 		}
 
