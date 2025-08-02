@@ -67,7 +67,7 @@ export function AccountList() {
 
 	useEffect(() => {
 		loadAccounts();
-	}, []);
+	}, [handleDelete]);
 
 	const handleDelete = async (id: string) => {
 		if (!confirm("Tem certeza que deseja excluir esta conta?")) {
