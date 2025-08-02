@@ -1,8 +1,8 @@
-import { Elysia, t } from "elysia";
-import { MonthReferenceService } from "../../services/MonthReferenceService";
-import { TransactionService } from "../../services/TransactionService";
-import * as TransactionSchemas from "../Transactions/Schemas";
-import * as MonthReferenceSchemas from "./Schemas";
+import { Elysia, t } from "elysia"
+import { MonthReferenceService } from "../../services/MonthReferenceService"
+import { TransactionService } from "../../services/TransactionService"
+import * as TransactionSchemas from "../Transactions/Schemas"
+import * as MonthReferenceSchemas from "./Schemas"
 
 const MonthReferenceController = new Elysia({
   prefix: "/month-references",
@@ -13,8 +13,8 @@ const MonthReferenceController = new Elysia({
   .get(
     "/",
     async () => {
-      const monthReferences = await MonthReferenceService.getAll();
-      return monthReferences;
+      const monthReferences = await MonthReferenceService.getAll()
+      return monthReferences
     },
     {
       response: {
@@ -23,13 +23,13 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Get all month references",
       },
-    }
+    },
   )
   .post(
     "/",
     async ({ body }) => {
-      const monthReference = await MonthReferenceService.create(body);
-      return monthReference;
+      const monthReference = await MonthReferenceService.create(body)
+      return monthReference
     },
     {
       body: MonthReferenceSchemas.monthReferenceCreateSchema,
@@ -39,18 +39,18 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Create a new month reference",
       },
-    }
+    },
   )
   .get(
     "/:id",
     async ({ params, status }) => {
-      const monthReference = await MonthReferenceService.getById(params.id);
+      const monthReference = await MonthReferenceService.getById(params.id)
       if (!monthReference) {
         return status(404, {
           error: "Month reference not found",
-        });
+        })
       }
-      return monthReference;
+      return monthReference
     },
     {
       response: {
@@ -61,7 +61,7 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Get a month reference by id",
       },
-    }
+    },
   )
   .put(
     "/:id",
@@ -71,8 +71,8 @@ const MonthReferenceController = new Elysia({
         month: body.month,
         year: body.year,
         active: body.active,
-      });
-      return monthReference;
+      })
+      return monthReference
     },
     {
       params: MonthReferenceSchemas.monthReferenceIdSchema,
@@ -80,20 +80,20 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Update a month reference by id",
       },
-    }
+    },
   )
   .delete(
     "/:id",
     async ({ params, status }) => {
-      const success = await MonthReferenceService.delete(params.id);
+      const success = await MonthReferenceService.delete(params.id)
       if (!success) {
         return status(404, {
           error: "Month reference not found",
-        });
+        })
       }
       return status(200, {
         success: true,
-      });
+      })
     },
     {
       params: MonthReferenceSchemas.monthReferenceIdSchema,
@@ -104,13 +104,13 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Delete a month reference by id",
       },
-    }
+    },
   )
   .get(
     "/find-or-create",
     async ({ query }) => {
-      const monthReference = await MonthReferenceService.findOrCreate(query.month, query.year);
-      return monthReference;
+      const monthReference = await MonthReferenceService.findOrCreate(query.month, query.year)
+      return monthReference
     },
     {
       query: MonthReferenceSchemas.monthReferenceFindOrCreateSchema,
@@ -120,15 +120,15 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Find or create a month reference",
       },
-    }
+    },
   )
   .get(
     "/:id/transactions",
     async ({ params }) => {
       const transactions = await TransactionService.search({
         monthReferenceId: params.id,
-      });
-      return transactions;
+      })
+      return transactions
     },
     {
       response: {
@@ -137,18 +137,18 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Get the transactions of a month reference by id",
       },
-    }
+    },
   )
   .put(
     "/:id/toggle-active",
     async ({ params, status }) => {
-      const monthReference = await MonthReferenceService.toggleActive(params.id);
+      const monthReference = await MonthReferenceService.toggleActive(params.id)
       if (!monthReference) {
         return status(404, {
           error: "Month reference not found",
-        });
+        })
       }
-      return monthReference;
+      return monthReference
     },
     {
       response: {
@@ -159,7 +159,7 @@ const MonthReferenceController = new Elysia({
       detail: {
         description: "Toggle the active status of a month reference by id",
       },
-    }
-  );
+    },
+  )
 
-export default MonthReferenceController;
+export default MonthReferenceController

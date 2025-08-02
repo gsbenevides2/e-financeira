@@ -1,15 +1,13 @@
-import Elysia from "elysia";
-import { buildCss } from "./buildCss";
-import { buildReact } from "./buildReact";
-import { handleReactRequest } from "./handleReactRequest";
-import { FrontendBuilderOptions } from "./types";
+import type { FrontendBuilderOptions } from "./types"
+import Elysia from "elysia"
+import { buildCss } from "./buildCss"
+import { buildReact } from "./buildReact"
+import { handleReactRequest } from "./handleReactRequest"
 
-const frontEndReactRoutes = ["/", "/login"] as const;
-
-export const frontEndBuilder = async (options: FrontendBuilderOptions) => {
-  const { react, tailwind } = options;
-  const handlerReactJs = await buildReact(react);
-  const handleStyles = await buildCss(tailwind);
+export async function frontEndBuilder(options: FrontendBuilderOptions) {
+  const { react, tailwind } = options
+  const handlerReactJs = await buildReact(react)
+  const handleStyles = await buildCss(tailwind)
 
   const app = new Elysia({ name: "frontend-builder", seed: {} })
     .get("/", ({ request }) => handleReactRequest(request), {
@@ -33,20 +31,20 @@ export const frontEndBuilder = async (options: FrontendBuilderOptions) => {
       },
     })
     .get("/favicon.ico", () => {
-      return Bun.file("src/frontend/favicon.ico");
+      return Bun.file("src/frontend/favicon.ico")
     })
     .onError({ as: "global" }, async ({ error, request }) => {
-      const is404 = "status" in error && error.status === 404;
-      const isBrowser = request.headers.get("accept")?.includes("text/html");
+      const is404 = "status" in error && error.status === 404
+      const isBrowser = request.headers.get("accept")?.includes("text/html")
       if (is404 && isBrowser) {
-        const response = await handleReactRequest(request);
+        const response = await handleReactRequest(request)
 
         return new Response(response.body, {
           status: 404,
           headers: response.headers,
-        });
+        })
       }
-    });
+    })
 
-  return app;
-};
+  return app
+}

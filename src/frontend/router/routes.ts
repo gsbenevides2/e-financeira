@@ -1,15 +1,15 @@
-import { RouteObject } from "react-router";
-import { NotFound } from "../pages/404";
-import { Home } from "../pages/Home";
-import { LoginPage } from "../pages/LoginPage";
-import { Root } from "../Root";
+import type { RouteObject } from "react-router"
+import { NotFound } from "../pages/404"
+import { Home } from "../pages/Home"
+import { LoginPage } from "../pages/LoginPage"
+import { Root } from "../Root"
 
 export type RouteObjectWithData = RouteObject & {
-  children?: RouteObjectWithData[];
+  children?: RouteObjectWithData[]
   data?: {
-    protected?: boolean;
-  };
-};
+    protected?: boolean
+  }
+}
 
 export const routes: RouteObjectWithData[] = [
   {
@@ -39,4 +39,4 @@ export const routes: RouteObjectWithData[] = [
       },
     ],
   },
-];
+]

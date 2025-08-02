@@ -1,8 +1,8 @@
-import { relations } from "drizzle-orm";
-import { boolean, decimal, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm"
+import { boolean, decimal, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 
 // Enum para tipos de conta
-export const accountTypesEnum = pgEnum("account_types", ["Debit", "Credit"]);
+export const accountTypesEnum = pgEnum("account_types", ["Debit", "Credit"])
 
 // Tabela TransactionCategory
 export const transactionCategories = pgTable("transaction_categories", {
@@ -10,7 +10,7 @@ export const transactionCategories = pgTable("transaction_categories", {
   name: text("name").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 // Tabela Account
 export const accounts = pgTable("accounts", {
@@ -19,7 +19,7 @@ export const accounts = pgTable("accounts", {
   accountType: accountTypesEnum("account_type").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 // Tabela MonthReference
 export const monthReferences = pgTable("month_references", {
@@ -29,7 +29,7 @@ export const monthReferences = pgTable("month_references", {
   active: boolean("active").notNull().default(true),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 // Tabela Transaction
 export const transactions = pgTable("transactions", {
@@ -51,7 +51,7 @@ export const transactions = pgTable("transactions", {
     .references(() => monthReferences.id),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+})
 
 // Tabela para auto-relação de transações (relatedTransactions e parentTransactions)
 export const transactionRelations = pgTable("transaction_relations", {
@@ -63,20 +63,20 @@ export const transactionRelations = pgTable("transaction_relations", {
     .notNull()
     .references(() => transactions.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+})
 
 // Definindo as relações
 export const transactionCategoriesRelations = relations(transactionCategories, ({ many }) => ({
   transactions: many(transactions),
-}));
+}))
 
 export const accountsRelations = relations(accounts, ({ many }) => ({
   transactions: many(transactions),
-}));
+}))
 
 export const monthReferencesRelations = relations(monthReferences, ({ many }) => ({
   transactions: many(transactions),
-}));
+}))
 
 export const transactionsRelations = relations(transactions, ({ one, many }) => ({
   account: one(accounts, {
@@ -98,7 +98,7 @@ export const transactionsRelations = relations(transactions, ({ one, many }) => 
   childRelations: many(transactionRelations, {
     relationName: "relatedTransaction",
   }),
-}));
+}))
 
 export const transactionRelationsRelations = relations(transactionRelations, ({ one }) => ({
   parentTransaction: one(transactions, {
@@ -111,4 +111,4 @@ export const transactionRelationsRelations = relations(transactionRelations, ({ 
     references: [transactions.id],
     relationName: "relatedTransaction",
   }),
-}));
+}))

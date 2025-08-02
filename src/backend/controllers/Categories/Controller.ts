@@ -1,6 +1,6 @@
-import { Elysia, t } from "elysia";
-import { TransactionCategoryService } from "../../services/TransactionCategoryService";
-import * as CategorySchemas from "./Schemas";
+import { Elysia, t } from "elysia"
+import { TransactionCategoryService } from "../../services/TransactionCategoryService"
+import * as CategorySchemas from "./Schemas"
 
 const CategoryController = new Elysia({
   prefix: "/categories",
@@ -11,8 +11,8 @@ const CategoryController = new Elysia({
   .get(
     "/",
     async () => {
-      const categories = await TransactionCategoryService.getAll();
-      return categories;
+      const categories = await TransactionCategoryService.getAll()
+      return categories
     },
     {
       response: {
@@ -21,13 +21,13 @@ const CategoryController = new Elysia({
       detail: {
         description: "Get all categories",
       },
-    }
+    },
   )
   .post(
     "/",
     async ({ body }) => {
-      const category = await TransactionCategoryService.create(body);
-      return category;
+      const category = await TransactionCategoryService.create(body)
+      return category
     },
     {
       body: CategorySchemas.categoryCreateSchema,
@@ -37,18 +37,18 @@ const CategoryController = new Elysia({
       detail: {
         description: "Create a new category",
       },
-    }
+    },
   )
   .get(
     "/:id",
     async ({ params, status }) => {
-      const category = await TransactionCategoryService.getById(params.id);
+      const category = await TransactionCategoryService.getById(params.id)
       if (!category) {
         return status(404, {
           error: "Category not found",
-        });
+        })
       }
-      return category;
+      return category
     },
     {
       response: {
@@ -58,7 +58,7 @@ const CategoryController = new Elysia({
       detail: {
         description: "Get a category by id",
       },
-    }
+    },
   )
   .put(
     "/:id",
@@ -66,8 +66,8 @@ const CategoryController = new Elysia({
       const category = await TransactionCategoryService.update({
         id: params.id,
         ...body,
-      });
-      return category;
+      })
+      return category
     },
     {
       params: CategorySchemas.categoryIdSchema,
@@ -78,15 +78,15 @@ const CategoryController = new Elysia({
       detail: {
         description: "Update a category by id",
       },
-    }
+    },
   )
   .delete(
     "/:id",
     async ({ params }) => {
-      await TransactionCategoryService.delete(params.id);
+      await TransactionCategoryService.delete(params.id)
       return {
         success: true,
-      };
+      }
     },
     {
       params: CategorySchemas.categoryIdSchema,
@@ -97,7 +97,7 @@ const CategoryController = new Elysia({
       detail: {
         description: "Delete a category by id",
       },
-    }
-  );
+    },
+  )
 
-export default CategoryController;
+export default CategoryController

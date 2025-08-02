@@ -1,4 +1,4 @@
-import { createStaticHandler } from "react-router";
-import { routes } from "./routes";
+import { createStaticHandler } from "react-router"
+import { routes } from "./routes"
 
-export const staticRouterHandler = createStaticHandler(routes);
+export const staticRouterHandler = createStaticHandler(routes)

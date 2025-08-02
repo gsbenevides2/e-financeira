@@ -1,4 +1,4 @@
-import { t } from "elysia";
+import { t } from "elysia"
 
 export const transactionResponseSchema = t.Object({
   id: t.String(),
@@ -13,7 +13,7 @@ export const transactionResponseSchema = t.Object({
   monthReferenceId: t.String(),
   createdAt: t.Date(),
   updatedAt: t.Date(),
-});
+})
 
 export const transactionSearchFiltersSchema = t.Object({
   accountId: t.Optional(t.String()),
@@ -26,7 +26,7 @@ export const transactionSearchFiltersSchema = t.Object({
   monthReferenceId: t.Optional(t.String()),
   month: t.Optional(t.Number()),
   year: t.Optional(t.Number()),
-});
+})
 
 export const transactionCreateSchema = t.Object({
   dateTime: t.Date(),
@@ -39,19 +39,19 @@ export const transactionCreateSchema = t.Object({
   categoryId: t.String(),
   monthReferenceId: t.String(),
   relatedTransactionIds: t.Optional(t.Array(t.String())),
-});
+})
 
 export const transactionIdSchema = t.Object({
   id: t.String(),
-});
+})
 
 export const errorResponseSchema = t.Object({
   error: t.String(),
-});
+})
 
 export const successResponseSchema = t.Object({
   success: t.Boolean(),
-});
+})
 
 export const transactionUpdateSchema = t.Object({
   dateTime: t.Optional(t.Date()),
@@ -60,19 +60,19 @@ export const transactionUpdateSchema = t.Object({
   address: t.Optional(t.String()),
   description: t.Optional(t.String()),
   invoiceData: t.Optional(t.String()),
-});
+})
 
 export const transactionLinkSchema = t.Object({
   relatedTransactionId: t.String(),
-});
+})
 
 export const transactionMoveSchema = t.Object({
   targetAccountId: t.String(),
-});
+})
 
 export const transactionMonthlyReportSchema = t.Object({
   year: t.Number(),
   month: t.Number(),
-});
+})
 
-export const transactionMonthlyReportResponseSchema = t.Record(t.String(), t.Number());
+export const transactionMonthlyReportResponseSchema = t.Record(t.String(), t.Number())

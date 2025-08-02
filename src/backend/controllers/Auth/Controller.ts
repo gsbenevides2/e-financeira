@@ -1,5 +1,5 @@
-import { Elysia, t } from "elysia";
-import { AuthService, InvalidCredentialsError } from "../../services/AuthService";
+import { Elysia, t } from "elysia"
+import { AuthService, InvalidCredentialsError } from "../../services/AuthService"
 
 const AuthController = new Elysia({
   prefix: "/auth",
@@ -10,24 +10,24 @@ const AuthController = new Elysia({
   .post(
     "/login",
     async ({ body, status, cookie }) => {
-      const { username, password } = body;
-      const response = await AuthService.authenticate(username, password);
+      const { username, password } = body
+      const response = await AuthService.authenticate(username, password)
       if (response instanceof InvalidCredentialsError) {
         return status(401, {
           error: "Invalid credentials",
-        });
+        })
       }
 
-      cookie.token.value = response;
-      cookie.token.httpOnly = true;
-      cookie.token.secure = true;
-      cookie.token.sameSite = "strict";
-      cookie.token.maxAge = 3600000; // 1 hour
+      cookie.token.value = response
+      cookie.token.httpOnly = true
+      cookie.token.secure = true
+      cookie.token.sameSite = "strict"
+      cookie.token.maxAge = 3600000 // 1 hour
 
       return status(200, {
         success: true,
         token: response,
-      });
+      })
     },
     {
       response: {
@@ -49,16 +49,16 @@ const AuthController = new Elysia({
       detail: {
         description: "Login to the application. This request will set a cookie with the token. The token is valid for 1 hour.",
       },
-    }
+    },
   )
   .post(
     "/logout",
     async ({ cookie }) => {
-      cookie.token.value = "";
-      await AuthService.logout();
+      cookie.token.value = ""
+      await AuthService.logout()
       return {
         success: true,
-      };
+      }
     },
     {
       cookie: t.Object({
@@ -72,7 +72,7 @@ const AuthController = new Elysia({
       detail: {
         description: "Logout from the application. This request will remove the cookie with the token.",
       },
-    }
-  );
+    },
+  )
 
-export default AuthController;
+export default AuthController

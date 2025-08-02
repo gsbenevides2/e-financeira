@@ -1,6 +1,6 @@
-import { Elysia, t } from "elysia";
-import { TransactionService } from "../../services/TransactionService";
-import * as TransactionSchemas from "./Schemas";
+import { Elysia, t } from "elysia"
+import { TransactionService } from "../../services/TransactionService"
+import * as TransactionSchemas from "./Schemas"
 
 const TransactionController = new Elysia({
   prefix: "/transactions",
@@ -11,8 +11,8 @@ const TransactionController = new Elysia({
   .get(
     "/",
     async ({ query }) => {
-      const transactions = await TransactionService.search(query);
-      return transactions;
+      const transactions = await TransactionService.search(query)
+      return transactions
     },
     {
       response: {
@@ -22,13 +22,13 @@ const TransactionController = new Elysia({
         description: "Get all transactions",
       },
       query: TransactionSchemas.transactionSearchFiltersSchema,
-    }
+    },
   )
   .post(
     "/",
     async ({ body }) => {
-      const transaction = await TransactionService.create(body);
-      return transaction;
+      const transaction = await TransactionService.create(body)
+      return transaction
     },
     {
       body: TransactionSchemas.transactionCreateSchema,
@@ -38,18 +38,18 @@ const TransactionController = new Elysia({
       detail: {
         description: "Create a new transaction",
       },
-    }
+    },
   )
   .get(
     "/:id",
     async ({ params, status }) => {
-      const transaction = await TransactionService.getById(params.id);
+      const transaction = await TransactionService.getById(params.id)
       if (!transaction) {
         return status(404, {
           error: "Transaction not found",
-        });
+        })
       }
-      return transaction;
+      return transaction
     },
     {
       response: {
@@ -60,7 +60,7 @@ const TransactionController = new Elysia({
       detail: {
         description: "Get a transaction by id",
       },
-    }
+    },
   )
   .put(
     "/:id",
@@ -68,8 +68,8 @@ const TransactionController = new Elysia({
       const transaction = await TransactionService.update({
         id: params.id,
         ...body,
-      });
-      return transaction;
+      })
+      return transaction
     },
     {
       response: {
@@ -80,15 +80,15 @@ const TransactionController = new Elysia({
       detail: {
         description: "Update a transaction by id",
       },
-    }
+    },
   )
   .delete(
     "/:id",
     async ({ params }) => {
-      await TransactionService.delete(params.id);
+      await TransactionService.delete(params.id)
       return {
         success: true,
-      };
+      }
     },
     {
       response: {
@@ -98,15 +98,15 @@ const TransactionController = new Elysia({
       detail: {
         description: "Delete a transaction by id",
       },
-    }
+    },
   )
   .post(
     "/:id/link",
     async ({ params, body }) => {
-      await TransactionService.linkTransaction(params.id, body.relatedTransactionId);
+      await TransactionService.linkTransaction(params.id, body.relatedTransactionId)
       return {
         success: true,
-      };
+      }
     },
     {
       response: {
@@ -117,15 +117,15 @@ const TransactionController = new Elysia({
       detail: {
         description: "Link a transaction to another transaction",
       },
-    }
+    },
   )
   .post(
     "/:id/unlink",
     async ({ params, body }) => {
-      await TransactionService.unlinkTransaction(params.id, body.relatedTransactionId);
+      await TransactionService.unlinkTransaction(params.id, body.relatedTransactionId)
       return {
         success: true,
-      };
+      }
     },
     {
       response: {
@@ -136,15 +136,15 @@ const TransactionController = new Elysia({
       detail: {
         description: "Unlink a transaction from another transaction",
       },
-    }
+    },
   )
   .post(
     "/:id/move",
     async ({ params, body }) => {
-      await TransactionService.moveToAccount(params.id, body.targetAccountId);
+      await TransactionService.moveToAccount(params.id, body.targetAccountId)
       return {
         success: true,
-      };
+      }
     },
     {
       response: {
@@ -155,13 +155,13 @@ const TransactionController = new Elysia({
       detail: {
         description: "Move a transaction to another account",
       },
-    }
+    },
   )
   .get(
     "/:id/related",
     async ({ params }) => {
-      const relatedTransactions = await TransactionService.getRelatedTransactions(params.id);
-      return relatedTransactions;
+      const relatedTransactions = await TransactionService.getRelatedTransactions(params.id)
+      return relatedTransactions
     },
     {
       response: {
@@ -171,13 +171,13 @@ const TransactionController = new Elysia({
       detail: {
         description: "Get the related transactions of a transaction by id",
       },
-    }
+    },
   )
   .get(
     "/monthly-report",
     async ({ query }) => {
-      const monthlyReport = await TransactionService.generateMonthlySummary(query.year, query.month);
-      return monthlyReport;
+      const monthlyReport = await TransactionService.generateMonthlySummary(query.year, query.month)
+      return monthlyReport
     },
     {
       response: {
@@ -187,7 +187,7 @@ const TransactionController = new Elysia({
       detail: {
         description: "Get the monthly report of a transaction by id",
       },
-    }
-  );
+    },
+  )
 
-export default TransactionController;
+export default TransactionController

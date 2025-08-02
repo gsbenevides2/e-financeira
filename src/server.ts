@@ -1,31 +1,33 @@
-import { cors } from "@elysiajs/cors";
-import serverTiming from "@elysiajs/server-timing";
-import swagger from "@elysiajs/swagger";
-import { logger } from "@grotto/logysia";
-import { Elysia } from "elysia";
-import api from "./backend/api";
-import { coolifyHealthChecker } from "./plugins/coolify-healtcheker";
-import { frontEndBuilder } from "./plugins/frontend-builder";
-import { isDevelopmentMode } from "./utils/isProductionMode";
+import { cors } from "@elysiajs/cors"
+import serverTiming from "@elysiajs/server-timing"
+import swagger from "@elysiajs/swagger"
+import { logger } from "@grotto/logysia"
+import { Elysia } from "elysia"
+import api from "./backend/api"
+import { coolifyHealthChecker } from "./plugins/coolify-healtcheker"
+import { frontEndBuilder } from "./plugins/frontend-builder"
+import { isDevelopmentMode } from "./utils/isProductionMode"
 
-const port = process.env.PORT || 3000;
+const port = Bun.env.PORT || 3000
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const app = new Elysia()
   .use(
     logger({
       logIP: true,
       writer: {
         write(msg: string) {
-          console.log(msg);
+          // eslint-disable-next-line no-console
+          console.log(msg)
         },
       },
-    })
+    }),
   )
   .use(cors())
   .use(
     serverTiming({
       enabled: isDevelopmentMode(),
-    })
+    }),
   )
   .use(
     swagger({
@@ -62,7 +64,7 @@ const app = new Elysia()
           },
         ],
       },
-    })
+    }),
   )
   .use(coolifyHealthChecker)
   .use(api)
@@ -75,10 +77,11 @@ const app = new Elysia()
       tailwind: {
         source: "./src/frontend/styles/app.css",
       },
-    })
+    }),
   )
   .listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-  });
+    // eslint-disable-next-line no-console
+    console.log(`Server is running on http://localhost:${port}`)
+  })
 
-export type App = typeof app;
+export type App = typeof app

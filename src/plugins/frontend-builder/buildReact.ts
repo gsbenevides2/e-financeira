@@ -1,19 +1,19 @@
-import { isDevelopmentMode, isProductionMode } from "../../utils/isProductionMode";
-import { ReactBuilderOptions } from "./types";
+import type { ReactBuilderOptions } from "./types"
+import { isDevelopmentMode, isProductionMode } from "../../utils/isProductionMode"
 
-export const buildReact = async (options: ReactBuilderOptions) => {
+export async function buildReact(options: ReactBuilderOptions) {
   const output = await Bun.build({
     entrypoints: [options.entrypoint],
     minify: isProductionMode(),
     sourcemap: isDevelopmentMode() ? "inline" : "none",
-  });
-  const js = output.outputs[0];
+  })
+  const js = output.outputs[0]
 
   return () => {
     return new Response(js, {
       headers: {
         "Content-Type": "application/javascript",
       },
-    });
-  };
-};
+    })
+  }
+}

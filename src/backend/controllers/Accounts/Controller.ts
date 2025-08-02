@@ -1,7 +1,7 @@
-import { Elysia, t } from "elysia";
-import { AccountService } from "../../services/AccountService";
-import * as TransactionSchemas from "../Transactions/Schemas";
-import * as AccountSchemas from "./Schemas";
+import { Elysia, t } from "elysia"
+import { AccountService } from "../../services/AccountService"
+import * as TransactionSchemas from "../Transactions/Schemas"
+import * as AccountSchemas from "./Schemas"
 
 const AccountController = new Elysia({
   prefix: "/accounts",
@@ -12,8 +12,8 @@ const AccountController = new Elysia({
   .get(
     "/",
     async () => {
-      const accounts = await AccountService.getAll();
-      return accounts;
+      const accounts = await AccountService.getAll()
+      return accounts
     },
     {
       response: {
@@ -22,13 +22,13 @@ const AccountController = new Elysia({
       detail: {
         description: "Get all accounts",
       },
-    }
+    },
   )
   .post(
     "/",
     async ({ body }) => {
-      const account = await AccountService.create(body);
-      return account;
+      const account = await AccountService.create(body)
+      return account
     },
     {
       body: AccountSchemas.accountCreateSchema,
@@ -38,18 +38,18 @@ const AccountController = new Elysia({
       detail: {
         description: "Create a new account",
       },
-    }
+    },
   )
   .get(
     "/:id",
     async ({ params, status }) => {
-      const account = await AccountService.getById(params.id);
+      const account = await AccountService.getById(params.id)
       if (!account) {
         return status(404, {
           error: "Account not found",
-        });
+        })
       }
-      return account;
+      return account
     },
     {
       response: {
@@ -60,7 +60,7 @@ const AccountController = new Elysia({
       detail: {
         description: "Get an account by id",
       },
-    }
+    },
   )
   .put(
     "/:id",
@@ -68,8 +68,8 @@ const AccountController = new Elysia({
       const account = await AccountService.update({
         id: params.id,
         ...body,
-      });
-      return account;
+      })
+      return account
     },
     {
       params: AccountSchemas.accountIdSchema,
@@ -80,15 +80,15 @@ const AccountController = new Elysia({
       detail: {
         description: "Update an account by id",
       },
-    }
+    },
   )
   .delete(
     "/:id",
     async ({ params }) => {
-      await AccountService.delete(params.id);
+      await AccountService.delete(params.id)
       return {
         success: true,
-      };
+      }
     },
     {
       params: AccountSchemas.accountIdSchema,
@@ -98,13 +98,13 @@ const AccountController = new Elysia({
       detail: {
         description: "Delete an account by id",
       },
-    }
+    },
   )
   .get(
     "/:id/balance",
     async ({ params }) => {
-      const balance = await AccountService.calculateBalance(params.id);
-      return balance;
+      const balance = await AccountService.calculateBalance(params.id)
+      return balance
     },
     {
       response: {
@@ -114,13 +114,13 @@ const AccountController = new Elysia({
       detail: {
         description: "Get the balance of an account by id",
       },
-    }
+    },
   )
   .get(
     "/:id/transactions",
     async ({ params }) => {
-      const transactions = await AccountService.listTransactions(params.id);
-      return transactions;
+      const transactions = await AccountService.listTransactions(params.id)
+      return transactions
     },
     {
       response: {
@@ -130,13 +130,13 @@ const AccountController = new Elysia({
       detail: {
         description: "Get the transactions of an account by id",
       },
-    }
+    },
   )
   .get(
     "/:id/monthly-report",
     async ({ params }) => {
-      const monthlyReport = await AccountService.getAccountSummary(params.id, params.month, params.year);
-      return monthlyReport;
+      const monthlyReport = await AccountService.getAccountSummary(params.id, params.month, params.year)
+      return monthlyReport
     },
     {
       response: {
@@ -146,7 +146,7 @@ const AccountController = new Elysia({
       detail: {
         description: "Get the monthly report of an account by id",
       },
-    }
-  );
+    },
+  )
 
-export default AccountController;
+export default AccountController
