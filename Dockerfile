@@ -4,6 +4,9 @@ FROM oven/bun:1.2.14-slim
 # Set working directory
 WORKDIR /app
 
+# Install curl
+RUN apt-get update && apt-get install -y curl
+
 # Copy package files
 COPY package*.json bun.lock ./
 
