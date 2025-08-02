@@ -1,4 +1,3 @@
-//import { basicAuth } from "@eelkevdbos/elysia-basic-auth";
 import { cors } from "@elysiajs/cors";
 import serverTiming from "@elysiajs/server-timing";
 import staticPlugin from "@elysiajs/static";
@@ -9,16 +8,6 @@ import { frontEndBuilder } from "./plugins/frontend-builder";
 
 const app = new Elysia()
   .use(cors())
-  // .use(
-  //   basicAuth({
-  //     credentials: [
-  //       {
-  //         username: process.env.AUTH_USERNAME || "admin",
-  //         password: process.env.AUTH_PASSWORD || "password123",
-  //       },
-  //     ],
-  //   })
-  // )
   .use(serverTiming())
   .use(
     swagger({
@@ -46,15 +35,6 @@ const app = new Elysia()
             description: "Get transactions informations",
           },
         ],
-        // components: {
-        //   securitySchemes: {
-        //     basicAuth: {
-        //       type: "http",
-        //       scheme: "basic",
-        //     },
-        //   },
-        // },
-        // security: [{ basicAuth: [] }],
       },
     })
   )
