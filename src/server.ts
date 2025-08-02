@@ -8,6 +8,8 @@ import { coolifyHealthChecker } from "./plugins/coolify-healtcheker";
 import { frontEndBuilder } from "./plugins/frontend-builder";
 import { isDevelopmentMode } from "./utils/isProductionMode";
 
+const port = process.env.PORT || 3000;
+
 const app = new Elysia()
   .use(
     logger({
@@ -75,8 +77,8 @@ const app = new Elysia()
       },
     })
   )
-  .listen(3000, () => {
-    console.log("Server is running on http://localhost:3000");
+  .listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
   });
 
 export type App = typeof app;
