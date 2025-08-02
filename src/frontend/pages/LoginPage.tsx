@@ -30,6 +30,15 @@ export const LoginPage: React.FC = () => {
         }
     };
 
+    const handleInputChange =
+        (setter: (value: string) => void) =>
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setter(e.target.value);
+            if (showInvalidCredentials) {
+                setShowInvalidCredentials(false);
+            }
+        };
+
     return (
         <div className="min-h-screen bg-gray-900 text-gray-200 flex items-center justify-center px-4">
             <div className="w-full max-w-md">
@@ -57,8 +66,7 @@ export const LoginPage: React.FC = () => {
                                     id="username"
                                     type="text"
                                     value={username}
-                                    onChange={(e) =>
-                                        setUsername(e.target.value)}
+                                    onChange={handleInputChange(setUsername)}
                                     placeholder="seu_usuario"
                                     required
                                     className="bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
@@ -75,13 +83,17 @@ export const LoginPage: React.FC = () => {
                                     id="password"
                                     type="password"
                                     value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)}
+                                    onChange={handleInputChange(setPassword)}
                                     placeholder="Sua senha"
                                     required
                                     className="bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
                                 />
                             </div>
+                            {showInvalidCredentials && (
+                                <p className="text-red-500 text-sm">
+                                    Credenciais inválidas. Tente novamente.
+                                </p>
+                            )}
                             <Button
                                 type="submit"
                                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
