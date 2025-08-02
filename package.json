@@ -12,7 +12,6 @@
 		"db:push": "bun run --bun drizzle-kit push",
 		"db:studio": "bun run --bun drizzle-kit studio",
 		"swagger:build": "cd node_modules/@elysiajs/swagger && bun install && bun run build || true && rm -rf node_modules && cd ../../..",
-		"test": "bun run lint",
 		"prepare": "husky"
 	},
 	"dependencies": {
