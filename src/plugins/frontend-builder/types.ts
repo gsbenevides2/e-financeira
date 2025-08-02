@@ -10,9 +10,6 @@ export interface ReactBuilderOptions {
 export interface TailwindBuilderOptions {
   source: string;
   tailwindConfig?: PluginOptions;
-  minify?: boolean;
-  map?: boolean;
-  autoprefixer?: boolean;
 }
 
 export interface FrontendBuilderOptions {
