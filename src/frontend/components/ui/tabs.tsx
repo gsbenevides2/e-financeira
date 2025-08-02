@@ -103,7 +103,7 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
                     ref={ref}
                     className={cn(
                         // Hidden on mobile, visible on desktop
-                        "hidden md:flex items-center justify-center rounded-md bg-gray-100 text-gray-500",
+                        "hidden md:flex gap-3 items-center justify-center rounded-md bg-gray-100 text-gray-500",
                         "h-10 p-1",
                         className,
                     )}
@@ -184,5 +184,10 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
     },
 );
 TabsContent.displayName = "TabsContent";
+
+export const useTabs = () => {
+    const { value, onValueChange } = React.useContext(TabsContext);
+    return { value, onValueChange };
+};
 
 export { Tabs, TabsContent, TabsList, TabsTrigger };

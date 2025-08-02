@@ -30,17 +30,20 @@
     "drizzle-kit": "^0.31.1",
     "drizzle-orm": "^0.44.2",
     "elysia": "latest",
+    "jose": "^6.0.12",
     "lucide-react": "^0.475.0",
     "postgres": "^3.4.7",
     "react": "^19",
     "react-dom": "^19",
     "react-hook-form": "^7.54.2",
+    "react-router": "^7.7.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
-    "bun-types": "latest",
     "@types/react": "^19",
-    "@types/react-dom": "^19"
+    "@types/react-dom": "^19",
+    "@types/tailwindcss": "^3.1.0",
+    "bun-types": "latest"
   }
 }

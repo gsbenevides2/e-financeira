@@ -1,26 +1,24 @@
-import { basicAuth } from "@eelkevdbos/elysia-basic-auth";
+//import { basicAuth } from "@eelkevdbos/elysia-basic-auth";
 import { cors } from "@elysiajs/cors";
 import serverTiming from "@elysiajs/server-timing";
 import staticPlugin from "@elysiajs/static";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 import api from "./backend/api";
-import App from "./frontend/App";
-import { react } from "./plugins/react-builder";
-import { tailwind } from "./plugins/tailwind-builder";
+import { frontEndBuilder } from "./plugins/frontend-builder";
 
 const app = new Elysia()
   .use(cors())
-  .use(
-    basicAuth({
-      credentials: [
-        {
-          username: process.env.AUTH_USERNAME || "admin",
-          password: process.env.AUTH_PASSWORD || "password123",
-        },
-      ],
-    })
-  )
+  // .use(
+  //   basicAuth({
+  //     credentials: [
+  //       {
+  //         username: process.env.AUTH_USERNAME || "admin",
+  //         password: process.env.AUTH_PASSWORD || "password123",
+  //       },
+  //     ],
+  //   })
+  // )
   .use(serverTiming())
   .use(
     swagger({
@@ -47,44 +45,33 @@ const app = new Elysia()
             name: "Transactions",
             description: "Get transactions informations",
           },
-          {
-            name: "Web",
-            description: "Web HTML routes",
-          },
         ],
-        components: {
-          securitySchemes: {
-            basicAuth: {
-              type: "http",
-              scheme: "basic",
-            },
-          },
-        },
-        security: [{ basicAuth: [] }],
+        // components: {
+        //   securitySchemes: {
+        //     basicAuth: {
+        //       type: "http",
+        //       scheme: "basic",
+        //     },
+        //   },
+        // },
+        // security: [{ basicAuth: [] }],
       },
     })
   )
   .use(staticPlugin())
   .use(api)
   .use(
-    tailwind({
-      path: "/public/output.css",
-      source: "./src/frontend/styles/app.css",
-      config: {
-        content: ["./src/frontend/**/*.{js,jsx,ts,tsx}"],
+    frontEndBuilder({
+      react: {
+        entrypoint: "./src/frontend/index.tsx",
+        publicDir: "./public",
       },
-      options: {
+      tailwind: {
+        source: "./src/frontend/styles/app.css",
         minify: true,
         map: false,
         autoprefixer: false,
       },
-    })
-  )
-  .use(
-    react({
-      entrypoint: "./src/frontend/index.tsx",
-      publicDir: "./public",
-      App,
     })
   )
   .listen(3000, () => {

@@ -22,7 +22,6 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
     onClose,
     onSave,
 }) => {
-    console.log(transaction);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<TransactionCategory[]>([]);
     const [monthReferences, setMonthReferences] = useState<MonthReference[]>(
@@ -52,20 +51,28 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
             setLoading(true);
             setError(null);
 
-
-
             const accountsPromise = apiClient.api.accounts.get();
             const categoriesPromise = apiClient.api.categories.get();
-            const monthReferencesPromise = apiClient.api["month-references"].get();
+            const monthReferencesPromise = apiClient.api["month-references"]
+                .get();
 
-            const [accountsResponse, categoriesResponse, monthReferencesResponse] = await Promise.all([
+            const [
+                accountsResponse,
+                categoriesResponse,
+                monthReferencesResponse,
+            ] = await Promise.all([
                 accountsPromise,
                 categoriesPromise,
                 monthReferencesPromise,
             ]);
-            const checkAccounts = isSuccessStatus(accountsResponse.status) && accountsResponse.data;
-            const checkCategories = isSuccessStatus(categoriesResponse.status) && categoriesResponse.data;
-            const checkMonthReferences = isSuccessStatus(monthReferencesResponse.status) && monthReferencesResponse.data;
+            const checkAccounts = isSuccessStatus(accountsResponse.status) &&
+                accountsResponse.data;
+            const checkCategories =
+                isSuccessStatus(categoriesResponse.status) &&
+                categoriesResponse.data;
+            const checkMonthReferences =
+                isSuccessStatus(monthReferencesResponse.status) &&
+                monthReferencesResponse.data;
 
             if (!checkAccounts || !checkCategories || !checkMonthReferences) {
                 throw new Error("Erro ao carregar dados");
@@ -78,7 +85,9 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
             setAccounts(accountsData);
             setCategories(categoriesData);
             // Filtrar apenas referências mensais ativas
-            const activeMonthReferences = monthReferencesData.filter((ref: MonthReference) => ref.active);
+            const activeMonthReferences = monthReferencesData.filter((
+                ref: MonthReference,
+            ) => ref.active);
             setMonthReferences(activeMonthReferences);
 
             // Se não houver transação sendo editada, selecionar a primeira conta e categoria
@@ -106,7 +115,7 @@ export const TransactionEditForm: React.FC<TransactionEditFormProps> = ({
             setError(null);
             const promise = transaction
                 ? apiClient.api.transactions({
-                    id: transaction.id
+                    id: transaction.id,
                 }).put({
                     ...formData,
                     value: parseFloat(formData.value),

@@ -96,7 +96,6 @@ export const MonthlyExpenseReport: React.FC = () => {
             setLoading(true);
             setError(null);
 
-
             const transactionsPromise = apiClient.api.transactions.get({
                 query: {
                     monthReferenceId: selectedMonthReference,
@@ -107,19 +106,35 @@ export const MonthlyExpenseReport: React.FC = () => {
 
             const categoriesPromise = apiClient.api.categories.get();
 
-            const monthReferencesPromise = apiClient.api["month-references"].get();
-           const [transactionsResponse, accountsResponse, categoriesResponse, monthReferencesResponse] = await Promise.all([
-            transactionsPromise,
-            accountsPromise,
-            categoriesPromise,
-            monthReferencesPromise,
-           ]);
-           const checkTransactions = isSuccessStatus(transactionsResponse.status) && transactionsResponse.data;
-           const checkAccounts = isSuccessStatus(accountsResponse.status) && accountsResponse.data;
-           const checkCategories = isSuccessStatus(categoriesResponse.status) && categoriesResponse.data;
-           const checkMonthReferences = isSuccessStatus(monthReferencesResponse.status) && monthReferencesResponse.data;
+            const monthReferencesPromise = apiClient.api["month-references"]
+                .get();
+            const [
+                transactionsResponse,
+                accountsResponse,
+                categoriesResponse,
+                monthReferencesResponse,
+            ] = await Promise.all([
+                transactionsPromise,
+                accountsPromise,
+                categoriesPromise,
+                monthReferencesPromise,
+            ]);
+            const checkTransactions =
+                isSuccessStatus(transactionsResponse.status) &&
+                transactionsResponse.data;
+            const checkAccounts = isSuccessStatus(accountsResponse.status) &&
+                accountsResponse.data;
+            const checkCategories =
+                isSuccessStatus(categoriesResponse.status) &&
+                categoriesResponse.data;
+            const checkMonthReferences =
+                isSuccessStatus(monthReferencesResponse.status) &&
+                monthReferencesResponse.data;
 
-            if (!checkTransactions || !checkAccounts || !checkCategories || !checkMonthReferences) {
+            if (
+                !checkTransactions || !checkAccounts || !checkCategories ||
+                !checkMonthReferences
+            ) {
                 throw new Error("Erro ao carregar dados do relatório");
             }
 
@@ -286,7 +301,7 @@ export const MonthlyExpenseReport: React.FC = () => {
         try {
             setLoading(true);
             const response = await apiClient.api.transactions({
-                id: transactionId
+                id: transactionId,
             }).delete();
 
             if (!isSuccessStatus(response.status)) {
@@ -299,8 +314,6 @@ export const MonthlyExpenseReport: React.FC = () => {
             // Fechar o modal se estiver aberto
             setModalData(null);
             setSelectedTransaction(null);
-
-            console.log("Transação excluída com sucesso");
         } catch (err) {
             setError("Erro ao excluir transação");
             console.error(err);
@@ -353,7 +366,6 @@ export const MonthlyExpenseReport: React.FC = () => {
                             id="monthReference"
                             value={selectedMonthReference}
                             onChange={(e) => {
-                                console.log(e.target.value);
                                 setSelectedMonthReference(e.target.value);
                             }}
                             className="cursor-pointer w-full px-3 py-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-700 text-gray-200"
