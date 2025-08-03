@@ -366,13 +366,15 @@ export class TransactionService {
 				eq(transactions.monthReferenceId, filters.monthReferenceId),
 			);
 		} else if (filters.month && filters.year) {
-			const monthReference = await MonthReferenceService.findOrCreate(
+			const monthReference = await MonthReferenceService.findByMonthAndYear(
 				filters.month,
 				filters.year,
 			);
-			whereConditions.push(
-				eq(transactions.monthReferenceId, monthReference.id),
-			);
+			if (monthReference) {
+				whereConditions.push(
+					eq(transactions.monthReferenceId, monthReference.id),
+				);
+			}
 		}
 
 		// Filtro por data
@@ -391,6 +393,10 @@ export class TransactionService {
 				ilike(transactions.address, `%${filters.query}%`),
 			);
 			if (orConditions) whereConditions.push(orConditions);
+		}
+
+		if (whereConditions.length === 0) {
+			return [];
 		}
 
 		const transactionsList =
@@ -494,10 +500,14 @@ export class TransactionService {
 		year: number,
 		month: number,
 	): Promise<MonthlySummary> {
-		const monthReference = await MonthReferenceService.findOrCreate(
+		const monthReference = await MonthReferenceService.findByMonthAndYear(
 			month,
 			year,
 		);
+
+		if (!monthReference) {
+			return {};
+		}
 
 		const monthlyTransactions = await db
 			.select({

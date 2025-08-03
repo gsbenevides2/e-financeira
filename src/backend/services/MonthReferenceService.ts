@@ -108,25 +108,37 @@ export class MonthReferenceService {
 		month: number,
 		year: number,
 	): Promise<MonthReference> {
-		const [existingMonthReference] = await db
+		const existingMonthReference =
+			await MonthReferenceService.findByMonthAndYear(month, year);
+
+		if (existingMonthReference) {
+			return existingMonthReference;
+		}
+
+		return MonthReferenceService.create({ month, year });
+	}
+
+	static async findByMonthAndYear(
+		month: number,
+		year: number,
+	): Promise<MonthReference | undefined> {
+		const [monthReference] = await db
 			.select()
 			.from(monthReferences)
 			.where(
 				and(eq(monthReferences.month, month), eq(monthReferences.year, year)),
 			);
 
-		if (existingMonthReference) {
-			return {
-				id: existingMonthReference.id,
-				month: existingMonthReference.month,
-				year: existingMonthReference.year,
-				active: existingMonthReference.active,
-				createdAt: existingMonthReference.createdAt,
-				updatedAt: existingMonthReference.updatedAt,
-			};
-		}
+		if (!monthReference) return undefined;
 
-		return MonthReferenceService.create({ month, year });
+		return {
+			id: monthReference.id,
+			month: monthReference.month,
+			year: monthReference.year,
+			active: monthReference.active,
+			createdAt: monthReference.createdAt,
+			updatedAt: monthReference.updatedAt,
+		};
 	}
 
 	static async getActiveOnly(): Promise<MonthReference[]> {

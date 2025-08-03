@@ -107,18 +107,24 @@ const MonthReferenceController = new Elysia({
 		},
 	)
 	.get(
-		"/find-or-create",
-		async ({ query }) => {
-			const monthReference = await MonthReferenceService.findOrCreate(
+		"/find",
+		async ({ query, status }) => {
+			const monthReference = await MonthReferenceService.findByMonthAndYear(
 				query.month,
 				query.year,
 			);
+			if (!monthReference) {
+				return status(404, {
+					error: "Month reference not found",
+				});
+			}
 			return monthReference;
 		},
 		{
 			query: MonthReferenceSchemas.monthReferenceFindOrCreateSchema,
 			response: {
 				200: MonthReferenceSchemas.monthReferenceResponseSchema,
+				404: MonthReferenceSchemas.errorResponseSchema,
 			},
 			detail: {
 				description: "Find or create a month reference",
