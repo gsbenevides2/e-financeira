@@ -488,7 +488,7 @@ export function MonthlyExpenseReport() {
 										<button
 											type="button"
 											key={categoryData.category.id}
-											className="flex items-center justify-between py-2 border-t border-gray-700 cursor-pointer hover:bg-gray-700 px-2 rounded transition-colors"
+											className="flex items-center justify-between py-2 border-t border-gray-700 cursor-pointer hover:bg-gray-700 px-2 rounded transition-colors w-full"
 											onClick={() => openModal(categoryData, account)}
 										>
 											<div className="flex items-center">
