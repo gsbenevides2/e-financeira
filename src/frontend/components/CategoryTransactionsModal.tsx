@@ -51,10 +51,10 @@ export function CategoryTransactionsModal({
 							<button
 								type="button"
 								key={transaction.id}
-								className="flex items-center justify-between py-3 px-4 bg-gray-700 rounded-lg border border-gray-600 cursor-pointer hover:bg-gray-600 transition-colors"
+								className="flex items-center justify-between py-3 px-4 bg-gray-700 rounded-lg border border-gray-600 cursor-pointer hover:bg-gray-600 transition-colors w-full"
 								onClick={() => onView(transaction)}
 							>
-								<div className="flex-1">
+								<div className="flex-1 text-left">
 									<div className="text-gray-200 font-medium">
 										{transaction.thirdParty}
 									</div>
