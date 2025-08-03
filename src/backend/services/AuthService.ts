@@ -1,5 +1,5 @@
-import crypto from "node:crypto";
 import * as jose from "jose";
+import crypto from "node:crypto";
 
 export class InvalidCredentialsError extends Error {
 	constructor(message: string) {
@@ -45,7 +45,6 @@ export class AuthService {
 		if (!AuthService.sessionId) {
 			return new InvalidCredentialsError("No session id found");
 		}
-
 		const privateKey = new TextEncoder().encode(
 			`${AuthService.secret}:${AuthService.sessionId}`,
 		);

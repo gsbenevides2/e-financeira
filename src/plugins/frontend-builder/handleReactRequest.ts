@@ -1,7 +1,10 @@
 import { createElement } from "react";
 import { renderToReadableStream } from "react-dom/server";
 import { createStaticRouter, StaticRouterProvider } from "react-router";
-import { AuthService } from "../../backend/services/AuthService";
+import {
+	AuthService,
+	InvalidCredentialsError,
+} from "../../backend/services/AuthService";
 import type { RouteObjectWithData } from "../../frontend/router/routes";
 import { staticRouterHandler } from "../../frontend/router/staticHandler";
 
@@ -25,6 +28,7 @@ export async function handleReactRequest(request: Request) {
 		.filter((data) => data !== null)[0];
 
 	if (data?.protected) {
+		console.log("Protected route");
 		const cookies = new Bun.CookieMap(request.headers.get("cookie") ?? "");
 		const token = cookies.get("token");
 		if (!token) {
@@ -36,11 +40,12 @@ export async function handleReactRequest(request: Request) {
 			});
 		}
 		const decoded = await AuthService.verify(token);
-		if (!decoded) {
+		if (!decoded || decoded instanceof InvalidCredentialsError) {
 			return new Response(null, {
 				status: 302,
 				headers: {
 					Location: "/login",
+					"Set-Cookie": `token=; Max-Age=0; Path=/; HttpOnly; SameSite=Strict`,
 				},
 			});
 		}

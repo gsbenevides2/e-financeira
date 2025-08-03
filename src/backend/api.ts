@@ -4,7 +4,7 @@ import AuthController from "./controllers/Auth/Controller";
 import CategoryController from "./controllers/Categories/Controller";
 import MonthReferenceController from "./controllers/MonthReference/Controller";
 import TransactionController from "./controllers/Transactions/Controller";
-import { AuthService } from "./services/AuthService";
+import { AuthService, InvalidCredentialsError } from "./services/AuthService";
 
 const api = new Elysia({
 	prefix: "/api",
@@ -20,7 +20,7 @@ const api = new Elysia({
 			});
 		}
 		const decoded = await AuthService.verify(token);
-		if (!decoded) {
+		if (!decoded || decoded instanceof InvalidCredentialsError) {
 			return status(401, {
 				error: "Unauthorized",
 			});
