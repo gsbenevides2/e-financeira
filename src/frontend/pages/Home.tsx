@@ -6,10 +6,12 @@ import {
 	LogOut,
 	PlusIcon,
 	Tag,
+	Upload,
 } from "lucide-react";
 import React, { useState } from "react";
 import { AccountForm } from "../components/AccountForm";
 import { AccountList } from "../components/AccountList";
+import { BulkTransactionForm } from "../components/BulkTransactionForm";
 import { CategoryForm } from "../components/CategoryForm";
 import { CategoryList } from "../components/CategoryList";
 import { LogOutScreen } from "../components/LogOutScreen";
@@ -27,7 +29,13 @@ import {
 } from "../components/ui/tabs";
 
 interface ModalState {
-	type: "transaction" | "account" | "category" | "monthReference" | null;
+	type:
+		| "transaction"
+		| "bulkTransaction"
+		| "account"
+		| "category"
+		| "monthReference"
+		| null;
 	isOpen: boolean;
 }
 
@@ -36,20 +44,19 @@ export const Home: React.FC = () => {
 		type: null,
 		isOpen: false,
 	});
+	const [currentTab, setCurrentTab] = useState("transactions");
 
 	const newButtonClick = () => {
-		const currentTab = document.querySelector("#tabs");
 		const handleOpenModal = (type: ModalState["type"]) => {
 			setModal({ type, isOpen: true });
 		};
-		const currentTabValue = currentTab?.getAttribute("data-current-tab");
-		if (currentTabValue === "transactions") {
+		if (currentTab === "transactions") {
 			handleOpenModal("transaction");
-		} else if (currentTabValue === "accounts") {
+		} else if (currentTab === "accounts") {
 			handleOpenModal("account");
-		} else if (currentTabValue === "categories") {
+		} else if (currentTab === "categories") {
 			handleOpenModal("category");
-		} else if (currentTabValue === "monthReferences") {
+		} else if (currentTab === "monthReferences") {
 			handleOpenModal("monthReference");
 		}
 	};
@@ -68,7 +75,11 @@ export const Home: React.FC = () => {
 					</p>
 				</header>
 
-				<Tabs defaultValue="transactions" className="space-y-6">
+				<Tabs
+					defaultValue="transactions"
+					className="space-y-6"
+					onValueChange={setCurrentTab}
+				>
 					<div className="flex items-center justify-between">
 						<TabsList className="bg-gray-800 border border-gray-700">
 							<TabsTrigger
@@ -121,10 +132,12 @@ export const Home: React.FC = () => {
 							</TabsTrigger>
 						</TabsList>
 
-						<div>
+						<div className="flex space-x-2">
 							{modal.isOpen ? (
 								modal.type === "transaction" ? (
 									<TransactionForm onClose={handleCloseModal} />
+								) : modal.type === "bulkTransaction" ? (
+									<BulkTransactionForm onClose={handleCloseModal} />
 								) : modal.type === "account" ? (
 									<AccountForm onClose={handleCloseModal} />
 								) : modal.type === "category" ? (
@@ -137,15 +150,30 @@ export const Home: React.FC = () => {
 								) : null
 							) : null}
 
-							{/* Botão de Ação */}
+							{/* Botões de Ação */}
 							{!modal.isOpen && (
-								<Button
-									onClick={newButtonClick}
-									className="bg-blue-600 hover:bg-blue-700 text-white"
-								>
-									<PlusIcon className="w-4 h-4 mr-2" />
-									Novo
-								</Button>
+								<>
+									{/* Botão Upload em Massa - Só mostra na aba de transações */}
+									{currentTab === "transactions" && (
+										<Button
+											onClick={() =>
+												setModal({ type: "bulkTransaction", isOpen: true })
+											}
+											className="bg-green-600 hover:bg-green-700 text-white"
+										>
+											<Upload className="w-4 h-4 mr-2" />
+											Upload em Massa
+										</Button>
+									)}
+
+									<Button
+										onClick={newButtonClick}
+										className="bg-blue-600 hover:bg-blue-700 text-white"
+									>
+										<PlusIcon className="w-4 h-4 mr-2" />
+										Novo
+									</Button>
+								</>
 							)}
 						</div>
 					</div>
