@@ -10,14 +10,12 @@ import { isDevelopmentMode } from "./utils/isProductionMode";
 
 const port = Bun.env.PORT || 3000;
 
-// eslint-disable-next-line unused-imports/no-unused-vars
 const app = new Elysia()
 	.use(
 		logger({
 			logIP: true,
 			writer: {
 				write(msg: string) {
-					// eslint-disable-next-line no-console
 					console.log(msg);
 				},
 			},
@@ -80,7 +78,6 @@ const app = new Elysia()
 		}),
 	)
 	.listen(port, () => {
-		// eslint-disable-next-line no-console
 		console.log(`Server is running on http://localhost:${port}`);
 	});
 
